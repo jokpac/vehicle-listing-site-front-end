@@ -9,7 +9,7 @@
   overflow: hidden;
   cursor: pointer;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
-  position: relative; /* To position the badge correctly */
+  position: relative;
 }
 
 .listing-card:hover {
@@ -66,4 +66,24 @@
 .rent-badge {
   background: #ffc107;
   color: #333;
+}
+
+.delete-button {
+  display: inline;
+  background-color: #ff4d4f;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  font-size: 14px;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-top: 10px;
+  position: absolute;
+  top: 1px;
+  right: 0.5rem;
+  transition: background-color 0.3s ease;
+}
+
+.delete-button:hover {
+  background-color: #ff7875;
 }

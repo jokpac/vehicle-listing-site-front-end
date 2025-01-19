@@ -1,0 +1,59 @@
+.vehicle-listings {
+  max-width: 1200px;
+  margin: 20px auto;
+  padding: 0 15px;
+  font-family: Arial, sans-serif;
+}
+
+.vehicle-listings h1 {
+  text-align: center;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+.vehicle-listings .add-listing-button {
+  background-color: #007bff;
+  color: white;
+  font-size: 16px;
+  font-weight: bold;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  text-align: center;
+  text-decoration: none;
+  margin-bottom: 20px;
+  float: right;
+  cursor: pointer;
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.vehicle-listings .add-listing-button:hover {
+  background-color: #0056b3;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+}
+
+.vehicle-listings .add-listing-button:active {
+  background-color: #004085;
+  box-shadow: none;
+}
+
+.vehicle-listings .no-listings {
+  text-align: center;
+  margin-top: 20px;
+  color: #777;
+}
+
+.listings-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  justify-content: center;
+}
+
+@media (max-width: 768px) {
+  .vehicle-listings .add-listing-button {
+    float: none;
+    display: block;
+    margin: 0 auto 20px auto;
+  }
+}

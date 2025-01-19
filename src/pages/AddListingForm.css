@@ -1,0 +1,98 @@
+.add-listing-form {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 30px;
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  font-family: 'Arial', sans-serif;
+}
+
+.add-listing-form h2 {
+  font-size: 24px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+label {
+  display: block;
+  font-size: 14px;
+  font-weight: 500;
+  color: #555;
+  margin-bottom: 8px;
+  margin-top: 20px;
+}
+
+input[type="text"],
+input[type="number"],
+textarea,
+select {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 15px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 16px;
+  background-color: #f9f9f9;
+  transition: border-color 0.3s ease;
+}
+
+input[type="text"]:focus,
+input[type="number"]:focus,
+textarea:focus,
+select:focus {
+  border-color: #5b9bf2;
+  outline: none;
+}
+
+textarea {
+  min-height: 120px;
+  resize: vertical;
+}
+
+input:disabled,
+select:disabled,
+textarea:disabled {
+  background-color: #e0e0e0;
+  cursor: not-allowed;
+}
+
+select {
+  appearance: none;
+  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"><path d="M6.293 9.293a1 1 0 0 1 1.414 0L10 6.707l2.293 2.586a1 1 0 0 1-1.414 1.414L10 8.207l-2.293 2.586a1 1 0 0 1-1.414-1.414L8.707 6.707l-2.293 2.586a1 1 0 0 1-1.414-1.414L6 6.707l2.293-2.586a1 1 0 0 1 1.414 0z"/></svg>');
+  background-position: right 10px center;
+  background-repeat: no-repeat;
+  background-size: 12px;
+}
+
+.submit-button {
+  display: inline-block;
+  padding: 15px 30px;
+  font-size: 16px;
+  font-weight: 600;
+  color: white;
+  background-color: #007bff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  width: 100%;
+  text-align: center;
+  margin-top: 20px;
+}
+
+.submit-button:hover {
+  background-color: #0056b3;
+}
+
+@media (max-width: 600px) {
+  .add-listing-form {
+    padding: 20px;
+  }
+
+  .submit-button {
+    width: 100%;
+  }
+}

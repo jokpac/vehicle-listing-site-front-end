@@ -1,6 +1,7 @@
 import React from 'react';
 import './ListingCard.css';
 import { useNavigate } from 'react-router-dom';
+import axios from '/React/vehicle-listings-site-react/src/data/AxiosConfig';
 
 function ListingCard({ listing, onDelete }) {
   const navigate = useNavigate();
@@ -9,9 +10,14 @@ function ListingCard({ listing, onDelete }) {
     navigate(`/listing/${listing.id}`);
   };
 
+  const baseURL = axios.defaults.baseURL;
+  const imageUrl = listing.imageURLs?.[0] 
+      ? baseURL + listing.imageURLs[0] 
+      : '/path/to/default-image.jpg';
+
   return (
     <div className="listing-card" onClick={handleClick}>
-      <img src='test.webp' alt={listing.title} className="listing-image" />
+      <img src={imageUrl} alt={listing.title} className="listing-image" />
       <div className="listing-details" onClick={handleClick}>
         <h3 className="listing-title">{listing.title}</h3>
         <p className="listing-price">€{listing.price}</p>

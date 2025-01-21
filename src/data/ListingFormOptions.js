@@ -6,7 +6,7 @@ export const fetchCountries = async () => {
 };
 
 export const fetchCities = async (countryId) => {
-  const response = await axios.get(`/api/cities?country=${countryId}`);
+  const response = await axios.get(`/api/countries/${countryId}/cities`);
   return response.data;
 };
 
@@ -16,6 +16,6 @@ export const fetchMakes = async () => {
 };
 
 export const fetchModels = async (makeId) => {
-  const response = await axios.get(`/api/models?make=${makeId}`);
-  return response.data;
+    const response = await axios.get(`/api/makes/${makeId}/models`);
+    return response.data;
 };

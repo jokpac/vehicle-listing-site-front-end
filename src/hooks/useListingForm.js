@@ -6,6 +6,7 @@ export function useListingForm(isEdit, onSubmit) {
   const [cities, setCities] = useState([]);
   const [makes, setMakes] = useState([]);
   const [models, setModels] = useState([]);
+  const [uploadedImages, setUploadedImages] = useState([]);
 
   const [formData, setFormData] = useState({
     title: "",
@@ -19,10 +20,10 @@ export function useListingForm(isEdit, onSubmit) {
     fuelType: "",
     transmission: "",
     drivenWheels: "",
-    country: "",
-    city: "",
-    make: "",
-    model: "",
+    country: null,
+    city: null,
+    make: null,
+    model: null,
   });
 
   const handleSubmit = (e) => {
@@ -32,12 +33,36 @@ export function useListingForm(isEdit, onSubmit) {
     }
   };
 
+  const uploadImage = async (file) => {
+    const formData = new FormData();
+    formData.append("file", file);
+  
+    try {
+      const response = await fetch("/images/upload", {
+        method: "POST",
+        body: formData,
+      });
+  
+      if (!response.ok) {
+        throw new Error(await response.text());
+      }
+  
+      const result = await response.text();
+      const imageId = result.split(": ")[1];
+      setUploadedImages((prev) => [...prev, { id: imageId, file }]);
+    } catch (error) {
+      console.error("Image upload failed:", error.message);
+    }
+  };
+
   // Options for dropdowns
   const options = {
-    countries: countries.map(country => ({ value: country.name, label: country.name })),
-    cities: cities.map(city => ({ value: city.name, label: city.name })),
-    makes: makes.map(make => ({ value: make.name, label: make.name })),
-    models: models.map(model => ({ value: model.name, label: model.name })),
+
+    countries: countries.map(country => ({ value: country.id, label: country.name })),
+    cities: cities.map(city => ({ value: city.id, label: city.name })),
+    makes: makes.map(make => ({ value: make.id, label: make.name })),
+    models: models.map(model => ({ value: model.id, label: model.name })),
+
     fuelTypes: [
       { value: "petrol", label: "Petrol" },
       { value: "diesel", label: "Diesel" },
@@ -57,43 +82,60 @@ export function useListingForm(isEdit, onSubmit) {
 
   useEffect(() => {
     const loadInitialData = async () => {
-      const [countryData, makeData] = await Promise.all([fetchCountries(), fetchMakes()]);
-      console.log("Fetched countries:", countryData);
-      console.log("Fetched makes:", makeData);
-      setCountries(countryData || []);
-      setMakes(makeData || []);
+      try {
+        const [countryData, makeData] = await Promise.all([fetchCountries(), fetchMakes()]);
+        console.log("Fetched countries:", countryData);
+        console.log("Fetched makes:", makeData);
+        setCountries(countryData || []);
+        setMakes(makeData || []);
+      } catch (error) {
+        console.error("Error loading initial data:", error);
+      }
     };
     loadInitialData();
   }, []);
 
   useEffect(() => {
-    if (formData.country) {
-      const loadCities = async () => {
-        const cityData = await fetchCities(formData.country);
-        console.log("Fetched cities for country", formData.country, ":", cityData);
-        setCities(cityData);
-      };
-      loadCities();
-    } else {
-      setCities([]);
-    }
+    const loadCities = async () => {
+      if (!formData.country) {
+        setCities([]);
+        return;
+      }
+      try {
+        const cityData = await fetchCities(formData.country); // Pass country ID
+        console.log(`Fetched cities for country ${formData.country}:`, cityData);
+        setCities(cityData || []);
+      } catch (error) {
+        console.error("Error fetching cities:", error);
+      }
+    };
+    loadCities();
   }, [formData.country]);
 
   useEffect(() => {
-    if (formData.make) {
-      const loadModels = async () => {
+    const loadModels = async () => {
+      if (!formData.make) {
+        setModels([]);
+        return;
+      }
+      try {
         const modelData = await fetchModels(formData.make);
-        console.log("Fetched models for make", formData.make, ":", modelData);
-        setModels(modelData);
-      };
-      loadModels();
-    } else {
-      setModels([]);
-    }
+        console.log(`Fetched models for make ${formData.make}:`, modelData);
+        setModels(modelData || []);
+      } catch (error) {
+        console.error("Error fetching models:", error);
+      }
+    };
+    loadModels();
   }, [formData.make]);
 
   const handleChange = (key, value) => {
-    setFormData((prevData) => ({ ...prevData, [key]: value }));
+    setFormData((prev) => ({
+      ...prev,
+      [key]: value,
+      ...(key === "country" ? { city: "" } : {}),
+      ...(key === "make" ? { model: "" } : {}),
+    }));
   };
 
   const resetForm = () => {
@@ -121,6 +163,8 @@ export function useListingForm(isEdit, onSubmit) {
     options,
     handleChange,
     handleSubmit,
+    uploadedImages,
+    uploadImage,
     resetForm, 
   };
 }

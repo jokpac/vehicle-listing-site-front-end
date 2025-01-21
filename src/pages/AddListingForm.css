@@ -59,6 +59,28 @@ textarea:disabled {
   cursor: not-allowed;
 }
 
+.image-upload-section {
+  margin-top: 1rem;
+  border: 1px solid #ccc;
+  padding: 1rem;
+  border-radius: 5px;
+}
+
+.uploaded-images {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.uploaded-image img {
+  max-width: 100px;
+  max-height: 100px;
+  object-fit: cover;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+}
+
 select {
   appearance: none;
   background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"><path d="M6.293 9.293a1 1 0 0 1 1.414 0L10 6.707l2.293 2.586a1 1 0 0 1-1.414 1.414L10 8.207l-2.293 2.586a1 1 0 0 1-1.414-1.414L8.707 6.707l-2.293 2.586a1 1 0 0 1-1.414-1.414L6 6.707l2.293-2.586a1 1 0 0 1 1.414 0z"/></svg>');

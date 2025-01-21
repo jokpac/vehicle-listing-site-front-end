@@ -18,6 +18,7 @@ function Home() {
       setListings(response.data);
     } catch (e) {
       console.e('Error fetching listings: ', e);
+      setListings([]);
     }
   };
 

@@ -7,6 +7,9 @@ function ListingDetails() {
   const { id } = useParams();
   const [listing, setListing] = useState(null);
   const [error, setError] = useState(null);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+
+  const baseURL = axios.defaults.baseURL;
 
   if (!listing && !error) {
     axios
@@ -28,13 +31,51 @@ function ListingDetails() {
     return <div>Loading...</div>;
   }
 
+  const handleThumbnailClick = (index) => {
+    setCurrentImageIndex(index);
+  };
+
+  const goToNextImage = () => {
+    setCurrentImageIndex((prevIndex) => (prevIndex + 1) % listing.imageURLs.length);
+  };
+
+  const goToPreviousImage = () => {
+    setCurrentImageIndex(
+      (prevIndex) => (prevIndex - 1 + listing.imageURLs.length) % listing.imageURLs.length
+    );
+  };
+
   return (
     <div className="listing-details-container">
-      <img
-        src={`${process.env.PUBLIC_URL}/test.webp`}
-        alt={listing.title}
-        className="listing-details-image"
-      />
+      {/* Large Image with Navigation */}
+      <div className="listing-main-image-container">
+        <button className="navigation-button left" onClick={goToPreviousImage}>
+          &#10094;
+        </button>
+
+        <img
+          src={baseURL + listing.imageURLs[currentImageIndex]}
+          alt={`listing-${currentImageIndex}`}
+          className="listing-main-image"
+        />
+
+        <button className="navigation-button right" onClick={goToNextImage}>
+          &#10095;
+        </button>
+      </div>
+
+      {/* Thumbnails */}
+      <div className="listing-thumbnails">
+        {listing.imageURLs?.map((imageURL, index) => (
+          <img
+            key={index}
+            src={baseURL + imageURL}
+            alt={`thumbnail-${index}`}
+            className={`listing-thumbnail ${index === currentImageIndex ? 'active' : ''}`}
+            onClick={() => handleThumbnailClick(index)}
+          />
+        ))}
+      </div>
       <h1 className="listing-details-title">{listing.title}</h1>
       <p className="listing-details-price">€{listing.price}</p>
 

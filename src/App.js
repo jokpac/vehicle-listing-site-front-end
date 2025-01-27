@@ -1,6 +1,9 @@
 import React from 'react';
+import Navbar from "./components/Navbar";
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Home from './pages/Home.js';
+import Login from './components/Auth/Login.js';
+import Register from './components/Auth/Register.js';
 import ListingDetails from './pages/ListingDetails.js';
 import AddListingForm from './pages/AddListingForm.js';
 
@@ -8,8 +11,11 @@ function App() {
 
   return (
     <Router>
+      <Navbar />
       <Routes>
         <Route path="/" element={<Home />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
         <Route path="/listing/:id" element={<ListingDetails />} />
         <Route path="/add-listing" element={<AddListingForm />} />
       </Routes>

@@ -1,11 +1,24 @@
-import React, { useEffect } from "react";
+import React from "react";
 import "./AddListingForm.css";
+import ListingService from "../services/ListingService";
 import { useListingForm } from "../hooks/useListingForm";
 import Dropdown from "../components/Form/Dropdown";
 import TextArea from "../components/Form/TextArea";
 import TextInput from "../components/Form/TextInput";
 
-function AddListingForm({ isEdit, onSubmit }) {
+const handleFormSubmit = async (formData) => {
+  try {
+    const response = await ListingService.submitListing(formData);
+    console.log("Listing submitted:", response);
+
+    alert("Listing added successfully!");
+  } catch (error) {
+    console.error("Error submitting form:", error);
+    alert("Error adding the listing!");
+  }
+};
+
+function AddListingForm() {
   const {
     formData,
     options,
@@ -13,31 +26,19 @@ function AddListingForm({ isEdit, onSubmit }) {
     handleSubmit,
     uploadedImages,
     uploadImage,
-  } = useListingForm(isEdit, onSubmit);
+  } = useListingForm(false, handleFormSubmit);
 
   const filteredCities = formData.country
-  ? options.cities.filter(city => city.countryId === formData.country.id)
-  : [];
+    ? options.cities.filter(city => city.countryId === formData.country.id)
+    : [];
 
   const filteredModels = formData.make
-  ? options.models.filter(model => model.makeId === formData.make.id)
-  : [];
-
-  useEffect(() => {
-    console.log("useEffect triggered with: ", formData);
-    if (formData.make && formData.model !== null) {
-      handleChange("model", null);
-    }
-    if (formData.country && formData.city === null) {
-      handleChange("city", null);
-    }
-  }, [formData.country, formData.city, handleChange]);
-  
+    ? options.models.filter(model => model.makeId === formData.make.id)
+    : [];
 
   return (
     <form onSubmit={handleSubmit} className="add-listing-form">
-      <h2>{isEdit ? "Edit Listing" : "Add Listing"}</h2>
-      
+
       {/* Text Inputs */}
       <TextInput
         id="title"
@@ -57,6 +58,24 @@ function AddListingForm({ isEdit, onSubmit }) {
       />
 
       <TextInput
+        id="year"
+        label="Year"
+        type="number"
+        value={formData.year}
+        onChange={(e) => handleChange("year", e.target.value)}
+        required
+      />
+
+      <TextInput
+        id="month"
+        label="Month"
+        type="number"
+        value={formData.month}
+        onChange={(e) => handleChange("month", e.target.value)}
+        required
+      />
+
+      <TextInput
         id="mileage"
         label="Mileage (km)"
         type="number"
@@ -72,7 +91,7 @@ function AddListingForm({ isEdit, onSubmit }) {
         onChange={(e) => handleChange("description", e.target.value)}
         required
       />
-      
+
       <TextInput
         id="engineSize"
         label="Engine Size (L)"
@@ -109,8 +128,8 @@ function AddListingForm({ isEdit, onSubmit }) {
           {uploadedImages.map((image) => (
             <div key={image.id} className="uploaded-image">
               <img
-                src={`/images/${image.id}`}
-                alt={`Uploaded ${image.id}`}
+                src={`${process.env.REACT_APP_API_URL}/images/${image.id}`}
+                alt={`Uploaded ${image.fileName}`}
                 className="image-preview"
               />
             </div>
@@ -122,7 +141,7 @@ function AddListingForm({ isEdit, onSubmit }) {
       <Dropdown
         id="fuelType"
         label="Fuel Type"
-        options={options.fuelTypes} 
+        options={options.fuelTypes}
         value={formData.fuelType}
         onChange={(e) => handleChange("fuelType", e.target.value)}
         placeholder="Select Fuel Type"
@@ -131,7 +150,7 @@ function AddListingForm({ isEdit, onSubmit }) {
       <Dropdown
         id="transmission"
         label="Transmission"
-        options={options.transmissions} 
+        options={options.transmissions}
         value={formData.transmission}
         onChange={(e) => handleChange("transmission", e.target.value)}
         placeholder="Select Transmission"
@@ -140,17 +159,17 @@ function AddListingForm({ isEdit, onSubmit }) {
       <Dropdown
         id="drivenWheels"
         label="Driven Wheels"
-        options={options.drivenWheels} 
+        options={options.drivenWheels}
         value={formData.drivenWheels}
         onChange={(e) => handleChange("drivenWheels", e.target.value)}
         placeholder="Select Driven Wheels"
       />
-      
+
       {/* Country and City Dropdowns */}
       <Dropdown
         id="country"
         label="Country"
-        options={options.countries} 
+        options={options.countries}
         value={formData.country || ""}
         onChange={(e) => handleChange("country", e.target.value)}
         placeholder="Select Country"
@@ -159,7 +178,7 @@ function AddListingForm({ isEdit, onSubmit }) {
       <Dropdown
         id="city"
         label="City"
-        options={filteredCities} 
+        options={filteredCities}
         value={formData.city || ""}
         onChange={(e) => handleChange("city", e.target.value)}
         placeholder="Select City"
@@ -170,7 +189,7 @@ function AddListingForm({ isEdit, onSubmit }) {
       <Dropdown
         id="make"
         label="Make"
-        options={options.makes} 
+        options={options.makes}
         value={formData.make || ""}
         onChange={(e) => handleChange("make", e.target.value)}
         placeholder="Select Make"
@@ -179,17 +198,29 @@ function AddListingForm({ isEdit, onSubmit }) {
       <Dropdown
         id="model"
         label="Model"
-        options={filteredModels} 
+        options={filteredModels}
         value={formData.model || ""}
         onChange={(e) => handleChange("model", e.target.value)}
         placeholder="Select Model"
         disabled={!formData.make}
       />
 
-      <button type="submit" className="submit-button">
-        {isEdit ? "Edit Listing" : "Submit"}
-      </button>
+      <Dropdown
+        id="listingType"
+        label="Listing Type"
+        options={[
+          { value: "SALE", label: "Sale" },
+          { value: "RENT", label: "Rent" },
+        ]}
+        value={formData.listingType}
+        onChange={(e) => handleChange("listingType", e.target.value)}
+        placeholder="Select Listing Type"
+        required
+      />
+
+      <button type="submit" className="submit-button">Submit</button>
     </form>
+    
   );
 }
 

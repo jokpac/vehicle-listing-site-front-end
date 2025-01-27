@@ -13,11 +13,11 @@ function ListingCard({ listing, onDelete }) {
   const baseURL = axios.defaults.baseURL;
   const imageUrl = listing.imageURLs?.[0] 
       ? baseURL + listing.imageURLs[0] 
-      : '/path/to/default-image.jpg';
+      : 'No_Image_Available.jpg';
 
   return (
     <div className="listing-card" onClick={handleClick}>
-      <img src={imageUrl} alt={listing.title} className="listing-image" />
+      <img src={imageUrl} alt={imageUrl} className="listing-image" />
       <div className="listing-details" onClick={handleClick}>
         <h3 className="listing-title">{listing.title}</h3>
         <p className="listing-price">€{listing.price}</p>

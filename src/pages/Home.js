@@ -1,12 +1,10 @@
 import { useEffect, useState } from 'react';
-import { useNavigate } from "react-router-dom";
 import './Home.css';
 import axios from '../data/AxiosConfig';
 import ListingCard from '../components/Listing/ListingCard';
 
 function Home() {
   const [listings, setListings] = useState([]);
-  const navigate = useNavigate();
 
   useEffect(() => {
     fetchListings();
@@ -34,9 +32,6 @@ function Home() {
   return (
     <div className="vehicle-listings">
       <h1>Vehicle Listings</h1>
-      <button className="add-listing-button" onClick={() => navigate("/add-listing")}>
-        Add Listing
-      </button>
       {listings.length > 0 ? (
         listings.map((listing) => (
           <ListingCard 

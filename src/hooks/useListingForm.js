@@ -20,36 +20,57 @@ export function useListingForm(isEdit, onSubmit) {
     fuelType: "",
     transmission: "",
     drivenWheels: "",
-    country: null,
-    city: null,
-    make: null,
-    model: null,
+    country: "",
+    city: "",
+    make: "",
+    model: "",
+    imageURLs: [],
+    listingStatus: "ACTIVE",
+    listingType: "SALE",
   });
 
   const handleSubmit = (e) => {
-    e.preventDefault(); 
+    e.preventDefault();
+
+    const payload = {
+      ...formData,
+      price: Number(formData.price),
+      year: Number(formData.year),
+      month: Number(formData.month),
+      engineSize: parseFloat(formData.engineSize),
+      enginePower: parseInt(formData.enginePower, 10),
+      countryId: formData.country,
+      cityId: formData.city,
+      makeId: formData.make,
+      modelId: formData.model,
+      imageURLs: uploadedImages.map(image => `images/${image.id}`)
+    };
+
+    console.log("Submitting payload:", payload);
+
     if (onSubmit) {
-      onSubmit(formData); 
+      onSubmit(payload);
     }
   };
 
+  // Uploading image
   const uploadImage = async (file) => {
     const formData = new FormData();
     formData.append("file", file);
-  
+
     try {
-      const response = await fetch("/images/upload", {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/images/upload`, {
         method: "POST",
         body: formData,
       });
-  
+
       if (!response.ok) {
         throw new Error(await response.text());
       }
-  
+
       const result = await response.text();
       const imageId = result.split(": ")[1];
-      setUploadedImages((prev) => [...prev, { id: imageId, file }]);
+      setUploadedImages((prev) => [...prev, { id: imageId, fileName: file.name, file }]);
     } catch (error) {
       console.error("Image upload failed:", error.message);
     }
@@ -64,19 +85,19 @@ export function useListingForm(isEdit, onSubmit) {
     models: models.map(model => ({ value: model.id, label: model.name })),
 
     fuelTypes: [
-      { value: "petrol", label: "Petrol" },
-      { value: "diesel", label: "Diesel" },
-      { value: "electric", label: "Electric" },
-      { value: "hybrid", label: "Hybrid" },
+      { value: "PETROL", label: "Petrol" },
+      { value: "DIESEL", label: "Diesel" },
+      { value: "ELECTRIC", label: "Electric" },
+      { value: "HYBRID", label: "Hybrid" },
     ],
     transmissions: [
-      { value: "manual", label: "Manual" },
-      { value: "automatic", label: "Automatic" },
+      { value: "MANUAL", label: "Manual" },
+      { value: "AUTOMATIC", label: "Automatic" },
     ],
     drivenWheels: [
-      { value: "fwd", label: "Front-Wheel Drive" },
-      { value: "rwd", label: "Rear-Wheel Drive" },
-      { value: "awd", label: "All-Wheel Drive" },
+      { value: "FWD", label: "Front-Wheel Drive" },
+      { value: "RWD", label: "Rear-Wheel Drive" },
+      { value: "AWD", label: "All-Wheel Drive" },
     ],
   };
 
@@ -102,7 +123,7 @@ export function useListingForm(isEdit, onSubmit) {
         return;
       }
       try {
-        const cityData = await fetchCities(formData.country); // Pass country ID
+        const cityData = await fetchCities(formData.country);
         console.log(`Fetched cities for country ${formData.country}:`, cityData);
         setCities(cityData || []);
       } catch (error) {
@@ -155,6 +176,9 @@ export function useListingForm(isEdit, onSubmit) {
       city: "",
       make: "",
       model: "",
+      imageURLs: [],
+      listingStatus: "ACTIVE",
+      listingType: "SALE"
     });
   };
 
@@ -165,6 +189,6 @@ export function useListingForm(isEdit, onSubmit) {
     handleSubmit,
     uploadedImages,
     uploadImage,
-    resetForm, 
+    resetForm,
   };
 }

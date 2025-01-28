@@ -7,10 +7,13 @@ const Register = () => {
     const {
         register,
         handleSubmit,
+        watch,
         formState: { errors },
     } = useForm();
     const [successful, setSuccessful] = useState(false);
     const [message, setMessage] = useState("");
+
+    const password = watch("password");
 
     const handleRegister = async (data) => {
         setMessage("");
@@ -101,6 +104,24 @@ const Register = () => {
                                 {errors.password && (
                                     <div className="alert alert-danger">
                                         {errors.password.message}
+                                    </div>
+                                )}
+                            </div>
+
+                            <div className="form-group">
+                                <label htmlFor="passwordConfirmation">Confirm Password</label>
+                                <input
+                                    type="password"
+                                    className="form-control"
+                                    {...register("passwordConfirmation", {
+                                        required: "Please confirm your password!",
+                                        validate: (value) =>
+                                            value === password || "Passwords do not match",
+                                    })}
+                                />
+                                {errors.passwordConfirmation && (
+                                    <div className="alert alert-danger">
+                                        {errors.passwordConfirmation.message}
                                     </div>
                                 )}
                             </div>

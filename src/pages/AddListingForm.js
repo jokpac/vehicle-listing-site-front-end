@@ -2,31 +2,23 @@ import React from "react";
 import "./AddListingForm.css";
 import ListingService from "../services/ListingService";
 import { useListingForm } from "../hooks/useListingForm";
+import { useNavigate } from "react-router-dom";
 import Dropdown from "../components/Form/Dropdown";
 import TextArea from "../components/Form/TextArea";
 import TextInput from "../components/Form/TextInput";
 
-const handleFormSubmit = async (formData) => {
-  try {
-    const response = await ListingService.submitListing(formData);
-    console.log("Listing submitted:", response);
-
-    alert("Listing added successfully!");
-  } catch (error) {
-    console.error("Error submitting form:", error);
-    alert("Error adding the listing!");
-  }
-};
-
-function AddListingForm() {
-  const {
-    formData,
-    options,
-    handleChange,
-    handleSubmit,
-    uploadedImages,
-    uploadImage,
-  } = useListingForm(false, handleFormSubmit);
+const AddListingForm = () => {
+  const navigate = useNavigate();
+  const imageURL = `http://localhost:8080/images`;
+  const { formData, options, handleChange, handleSubmit, uploadedImages, uploadImage } =
+    useListingForm(false, async (payload) => {
+      try {
+        await ListingService.submitListing(payload);
+        navigate("/dashboard");
+      } catch (error) {
+        console.error("Error submitting form:", error.message || error);
+      }
+    });
 
   const filteredCities = formData.country
     ? options.cities.filter(city => city.countryId === formData.country.id)
@@ -128,7 +120,7 @@ function AddListingForm() {
           {uploadedImages.map((image) => (
             <div key={image.id} className="uploaded-image">
               <img
-                src={`${process.env.REACT_APP_API_URL}/images/${image.id}`}
+                src={`${imageURL}/${image.id}`}
                 alt={`Uploaded ${image.fileName}`}
                 className="image-preview"
               />
@@ -220,7 +212,7 @@ function AddListingForm() {
 
       <button type="submit" className="submit-button">Submit</button>
     </form>
-    
+
   );
 }
 

@@ -1,32 +1,34 @@
 import { useEffect, useState } from 'react';
 import './Home.css';
 import axios from '../data/AxiosConfig';
+import AuthService from '../services/AuthService';
 import ListingCard from '../components/Listing/ListingCard';
 
 function Home() {
   const [listings, setListings] = useState([]);
+  const [user, setUser] = useState(null);
 
   useEffect(() => {
     fetchListings();
+    const loggedInUser = AuthService.getCurrentUser();
+    setUser(loggedInUser);
   }, []);
 
   const fetchListings = async () => {
     try {
       const response = await axios.get('/api/listings');
-      setListings(response.data);
+      const activeListings = response.data.filter(listing => listing.listingStatus === 'ACTIVE');
+      setListings(activeListings);
     } catch (e) {
-      console.e('Error fetching listings: ', e);
+      console.error('Error fetching listings: ', e);
       setListings([]);
     }
   };
 
-  const handleListingDelete = async (id) => {
-    try {
-      await axios.delete(`/api/listings/${id}`);
-      fetchListings();
-    } catch (e) {
-      console.e('Error deleting listing: ', e);
-    }
+  const handleListingDelete = (deletedId) => {
+    setListings((prevListings) =>
+      prevListings.filter((listing) => listing.id !== deletedId)
+    );
   };
 
   return (
@@ -34,10 +36,11 @@ function Home() {
       <h1>Vehicle Listings</h1>
       {listings.length > 0 ? (
         listings.map((listing) => (
-          <ListingCard 
-            key={listing.id} 
-            listing={listing} 
-            onDelete={handleListingDelete} 
+          <ListingCard
+            key={listing.id}
+            listing={listing}
+            onDelete={handleListingDelete}
+            user={user}
           />
         ))
       ) : (

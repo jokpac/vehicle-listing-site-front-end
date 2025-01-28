@@ -6,6 +6,7 @@ import Login from './components/Auth/Login.js';
 import Register from './components/Auth/Register.js';
 import ListingDetails from './pages/ListingDetails.js';
 import AddListingForm from './pages/AddListingForm.js';
+import Dashboard from './pages/Dashboard.js';
 
 function App() {
 
@@ -16,6 +17,7 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/listing/:id" element={<ListingDetails />} />
         <Route path="/add-listing" element={<AddListingForm />} />
       </Routes>

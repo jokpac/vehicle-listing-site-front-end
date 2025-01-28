@@ -9,11 +9,8 @@ const Navbar = () => {
     const currentUser = AuthService.getCurrentUser();
 
     const handleLogout = () => {
-
         sessionStorage.removeItem("authToken");
-
         AuthService.logout();
-
         navigate("/login");
         window.location.reload();
     };
@@ -43,6 +40,11 @@ const Navbar = () => {
                 >
                     Add Listing
                 </button>
+                {currentUser && (
+                    <Link to="/dashboard" className="btn btn-outline-info">
+                        Dashboard
+                    </Link>
+                )}
                 {currentUser ? (
                     <button className="logout-button" onClick={handleLogout}>
                         Logout

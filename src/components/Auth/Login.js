@@ -13,11 +13,11 @@ const Login = () => {
     const onSubmit = (data) => {
         setMessage("");
         setLoading(true);
-    
+
         AuthService.login(data.username, data.password)
             .then((responseData) => {
                 console.log("Login successful: ", responseData);
-                navigate("/profile");
+                navigate("/dashboard");
                 window.location.reload();
             })
             .catch((error) => {

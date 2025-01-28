@@ -19,7 +19,7 @@ const login = (username, password) => {
         .then((response) => {
             if (response && response.data && response.data.accessToken) {
                 console.log("We got Response: ", response);
-                sessionStorage.setItem("user", JSON.stringify(response.data)); // Save user data in localStorage
+                sessionStorage.setItem("user", JSON.stringify(response.data));
                 return response.data;
             } else {
                 throw new Error("Login failed: accessToken not found in response.");

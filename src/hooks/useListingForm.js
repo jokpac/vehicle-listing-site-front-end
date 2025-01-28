@@ -7,6 +7,9 @@ export function useListingForm(isEdit, onSubmit) {
   const [makes, setMakes] = useState([]);
   const [models, setModels] = useState([]);
   const [uploadedImages, setUploadedImages] = useState([]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const imageUploadURL = 'http://localhost:8080/images/upload';
 
   const [formData, setFormData] = useState({
     title: "",
@@ -29,8 +32,11 @@ export function useListingForm(isEdit, onSubmit) {
     listingType: "SALE",
   });
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (isSubmitting) return;
+    setIsSubmitting(true);
 
     const payload = {
       ...formData,
@@ -46,10 +52,12 @@ export function useListingForm(isEdit, onSubmit) {
       imageURLs: uploadedImages.map(image => `images/${image.id}`)
     };
 
-    console.log("Submitting payload:", payload);
-
-    if (onSubmit) {
-      onSubmit(payload);
+    try {
+      await onSubmit(payload);
+    } catch (error) {
+      console.error("Error submitting form:", error.message || error);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -59,7 +67,7 @@ export function useListingForm(isEdit, onSubmit) {
     formData.append("file", file);
 
     try {
-      const response = await fetch(`${process.env.REACT_APP_API_URL}/images/upload`, {
+      const response = await fetch(`${imageUploadURL}`, {
         method: "POST",
         body: formData,
       });
@@ -105,8 +113,6 @@ export function useListingForm(isEdit, onSubmit) {
     const loadInitialData = async () => {
       try {
         const [countryData, makeData] = await Promise.all([fetchCountries(), fetchMakes()]);
-        console.log("Fetched countries:", countryData);
-        console.log("Fetched makes:", makeData);
         setCountries(countryData || []);
         setMakes(makeData || []);
       } catch (error) {
@@ -124,10 +130,9 @@ export function useListingForm(isEdit, onSubmit) {
       }
       try {
         const cityData = await fetchCities(formData.country);
-        console.log(`Fetched cities for country ${formData.country}:`, cityData);
         setCities(cityData || []);
       } catch (error) {
-        console.error("Error fetching cities:", error);
+        console.error("Error loading cities:", error)
       }
     };
     loadCities();
@@ -141,7 +146,6 @@ export function useListingForm(isEdit, onSubmit) {
       }
       try {
         const modelData = await fetchModels(formData.make);
-        console.log(`Fetched models for make ${formData.make}:`, modelData);
         setModels(modelData || []);
       } catch (error) {
         console.error("Error fetching models:", error);
@@ -190,5 +194,6 @@ export function useListingForm(isEdit, onSubmit) {
     uploadedImages,
     uploadImage,
     resetForm,
+    isSubmitting
   };
 }

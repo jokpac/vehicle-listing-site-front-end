@@ -10,24 +10,25 @@ const instance = axios.create({
 const user = JSON.parse(sessionStorage.getItem("user"));
 
 if (user && user.accessToken) {
-    axios.defaults.headers.common['Authorization'] = `Bearer ${user.accessToken}`;
-} else {
-    delete axios.defaults.headers.common['Authorization'];
+    instance.defaults.headers.common['Authorization'] = `Bearer ${user.accessToken}`;
 }
 
-instance.interceptors.request.use((config) => {
-    const token = sessionStorage.getItem("authToken");
+instance.interceptors.request.use(
+    (config) => {
+        const token = sessionStorage.getItem("authToken");
 
-    if (token) {
-        config.headers["Authorization"] = `Bearer ${token}`;
+        if (token) {
+            config.headers["Authorization"] = `Bearer ${token}`;
+        }
+
+        return config;
+    },
+    (error) => {
+        return Promise.reject(error);
     }
+);
 
-    return config;
-}, (error) => {
-    return Promise.reject(error);
-});
-
-axios.interceptors.response.use(
+instance.interceptors.response.use(
     (response) => response,
     (error) => {
         if (error.response && error.response.status === 401) {

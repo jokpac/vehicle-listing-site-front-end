@@ -1,10 +1,21 @@
+import './Dashboard.css'
 import React, { useEffect, useState } from "react";
 import AuthService from "../services/AuthService";
 import ListingService from "../services/ListingService";
+import { useNavigate } from "react-router-dom";
 
 const Dashboard = () => {
     const [user, setUser] = useState(null);
     const [listings, setListings] = useState([]);
+    const navigate = useNavigate();
+
+    const handleEdit = (listingId) => {
+        navigate(`/edit-listing/${listingId}`);
+    };
+
+    const handleViewDetails = (listingId) => {
+        navigate(`/listing/${listingId}`);
+    };
 
     useEffect(() => {
         const currentUser = AuthService.getCurrentUser();
@@ -63,8 +74,13 @@ const Dashboard = () => {
                         <ul className="listing-list">
                             {listings.map((listing) => (
                                 <li key={listing.id} className="listing-item">
-                                    <h3>{listing.title}</h3>
-                                    <p>Status: {listing.listingStatus}</p>
+                                    <h3
+                                        className="title"
+                                        style={{ cursor: "pointer", color: "blue" }}
+                                        onClick={() => handleViewDetails(listing.id)}
+                                    >
+                                        {listing.title}
+                                    </h3>
                                     <label>
                                         Active
                                         <input
@@ -72,8 +88,8 @@ const Dashboard = () => {
                                             checked={listing.listingStatus === "ACTIVE"}
                                             onChange={() => handleToggleStatus(listing.id, listing.listingStatus)}
                                         />
-                                        Inactive
                                     </label>
+                                    <button onClick={() => handleEdit(listing.id)}>Edit</button>
                                     <button onClick={() => handleDelete(listing.id)}>Delete</button>
                                 </li>
                             ))}

@@ -1,18 +1,14 @@
 .vehicle-listings {
-  max-width: 350px;
-  margin: 20px auto;
-  padding: 0 15px;
-  font-family: Arial, sans-serif;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  justify-content: center;
 }
 
-.vehicle-listings h1 {
-  text-align: center;
-  margin-bottom: 20px;
-  color: #333;
-}
-
-.vehicle-listings .no-listings {
-  text-align: center;
-  margin-top: 20px;
-  color: #777;
+.listing-card {
+  width: 300px;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
 }

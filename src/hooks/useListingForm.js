@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
 import { fetchCountries, fetchCities, fetchMakes, fetchModels } from "../data/ListingFormOptions";
+import ListingService from "../services/ListingService";
 
-export function useListingForm(isEdit, onSubmit) {
+export function useListingForm(listingId, onSubmit) {
   const [countries, setCountries] = useState([]);
   const [cities, setCities] = useState([]);
   const [makes, setMakes] = useState([]);
@@ -60,6 +61,52 @@ export function useListingForm(isEdit, onSubmit) {
       setIsSubmitting(false);
     }
   };
+
+  useEffect(() => {
+    if (listingId) {
+      const fetchListingData = async () => {
+        try {
+          const listingData = await ListingService.getListingById(listingId);
+          setFormData({
+            title: listingData.title || "",
+            price: listingData.price || "",
+            year: listingData.year || "",
+            month: listingData.month || "",
+            mileage: listingData.mileage || "",
+            description: listingData.description || "",
+            engineSize: listingData.engineSize || "",
+            enginePower: listingData.enginePower || "",
+            fuelType: listingData.fuelType || "",
+            transmission: listingData.transmission || "",
+            drivenWheels: listingData.drivenWheels || "",
+            country: listingData.country?.id || "",
+            city: listingData.city?.id || "",
+            make: listingData.make?.id || "",
+            model: listingData.model?.id || "",
+            imageURLs: listingData.imageURLs || [],
+            listingStatus: listingData.listingStatus || "ACTIVE",
+            listingType: listingData.listingType || "SALE",
+          });
+  
+          if (listingData.imageURLs) {
+            setUploadedImages(
+              listingData.imageURLs.map((url) => {
+                const id = url.split("/")[1];
+                return {
+                  id,
+                  url,
+                };
+              })
+            );
+          }
+        } catch (error) {
+          console.error("Error fetching listing data:", error.message);
+        }
+      };
+  
+      fetchListingData();
+    }
+  }, [listingId]);
 
   // Uploading image
   const uploadImage = async (file) => {

@@ -2,23 +2,28 @@ import React from "react";
 import "./AddListingForm.css";
 import ListingService from "../services/ListingService";
 import { useListingForm } from "../hooks/useListingForm";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import Dropdown from "../components/Form/Dropdown";
 import TextArea from "../components/Form/TextArea";
 import TextInput from "../components/Form/TextInput";
 
 const AddListingForm = () => {
+  const { listingId } = useParams();
   const navigate = useNavigate();
   const imageURL = `http://localhost:8080/images`;
   const { formData, options, handleChange, handleSubmit, uploadedImages, uploadImage } =
-    useListingForm(false, async (payload) => {
+    useListingForm(listingId, async (payload) => {
       try {
-        await ListingService.submitListing(payload);
+        if (listingId) {
+            await ListingService.updateListing(listingId, payload);
+        } else {
+            await ListingService.submitListing(payload);
+        }
         navigate("/dashboard");
-      } catch (error) {
+    } catch (error) {
         console.error("Error submitting form:", error.message || error);
-      }
-    });
+    }
+});
 
   const filteredCities = formData.country
     ? options.cities.filter(city => city.countryId === formData.country.id)

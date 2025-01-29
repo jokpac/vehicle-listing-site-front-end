@@ -16,6 +16,18 @@ const getUserListings = async (userId) => {
     return response.data;
 };
 
+const getListingById = async (listingId) => {
+    try {
+        const response = await axios.get(`${API_URL}/listings/${listingId}`, {
+            headers: getAuthHeader(),
+        });
+        return response.data;
+    } catch (error) {
+        console.error("Error fetching listing by ID:", error.response?.data || error.message);
+        throw error;
+    }
+};
+
 const deleteListing = async (listingId) => {
     try {
         const response = await axios.delete(`${API_URL}/listings/${listingId}`, {
@@ -27,6 +39,22 @@ const deleteListing = async (listingId) => {
         return response.data;
     } catch (error) {
         console.error("Error deleting listing:", error.response?.data || error.message);
+        throw error;
+    }
+};
+
+const updateListing = async (listingId, listingData) => {
+    try {
+        const response = await axios.put(`${API_URL}/listings/${listingId}`, listingData, {
+            headers: {
+                ...getAuthHeader(),
+                "Content-Type": "application/json",
+            },
+        });
+        console.log("Listing updated successfully:", response.data);
+        return response.data;
+    } catch (error) {
+        console.error("Error updating listing:", error.response?.data || error.message);
         throw error;
     }
 };
@@ -68,8 +96,10 @@ const submitListing = async (listingData) => {
 
 const ListingService = {
     getUserListings,
+    getListingById,
     deleteListing,
     updateListingStatus,
+    updateListing,
     submitListing,
 };
 

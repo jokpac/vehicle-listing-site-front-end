@@ -47,7 +47,6 @@ function ListingDetails() {
 
   return (
     <div className="listing-details-container">
-      {/* Large Image with Navigation */}
       <div className="listing-main-image-container">
         <button className="navigation-button left" onClick={goToPreviousImage}>
           &#10094;
@@ -64,7 +63,6 @@ function ListingDetails() {
         </button>
       </div>
 
-      {/* Thumbnails */}
       <div className="listing-thumbnails">
         {listing.imageURLs?.map((imageURL, index) => (
           <img

@@ -33,7 +33,6 @@ function Home() {
 
   return (
     <div className="vehicle-listings">
-      <h1>Vehicle Listings</h1>
       {listings.length > 0 ? (
         listings.map((listing) => (
           <ListingCard

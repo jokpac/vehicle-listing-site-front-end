@@ -35,13 +35,13 @@ const Navbar = () => {
             </div>
             <div className="navbar-links">
                 <button
-                    className="btn btn-outline-primary"
+                    className="add-listing-button"
                     onClick={handleAddListingClick}
                 >
                     Add Listing
                 </button>
                 {currentUser && (
-                    <Link to="/dashboard" className="btn btn-outline-info">
+                    <Link to="/dashboard" className="dashboard-button">
                         Dashboard
                     </Link>
                 )}

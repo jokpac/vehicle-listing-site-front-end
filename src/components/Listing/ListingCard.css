@@ -1,5 +1,5 @@
 .listing-card {
-  width: 100%;
+  width: 350px;
   height: 100%;
   max-width: 350px;
   margin: 1rem;
@@ -18,20 +18,24 @@
 }
 
 .listing-image {
-  width: 100%;
-  height: auto;
+  width: 350px;
+  height: 250px;
+  object-fit: cover;
   border-bottom: 1px solid #ddd;
 }
 
 .listing-details {
-  padding: 1.5rem;
   font-family: 'Arial', sans-serif;
   position: relative;
-  font-size: 1rem;
   color: #777;
 }
 
+h3.listing-title {
+  text-decoration: none !important;
+}
+
 .listing-title {
+  text-align: center;
   font-size: 2rem;
   font-weight: bold;
   color: #333;
@@ -43,7 +47,7 @@
   font-size: 1.6rem;
   font-weight: bold;
   color: #28a745;
-  margin-bottom: 1rem;
+  margin-bottom: 0.5rem;
 }
 
 .listing-type-badge {

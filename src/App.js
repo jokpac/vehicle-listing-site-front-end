@@ -20,6 +20,7 @@ function App() {
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/listing/:id" element={<ListingDetails />} />
         <Route path="/add-listing" element={<AddListingForm />} />
+        <Route path="/edit-listing/:listingId" element={<AddListingForm />} />
       </Routes>
     </Router>
   );

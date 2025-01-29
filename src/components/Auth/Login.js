@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import "./Login.css"
 import { useNavigate } from 'react-router-dom';
 import { useForm } from "react-hook-form";
 import AuthService from "../../services/AuthService";
@@ -36,49 +37,49 @@ const Login = () => {
     };
 
     return (
-        <div className="col-md-12">
-            <div className="card card-container">
+        <div className="login-container">
+            <div className="login-card">
 
                 <form onSubmit={handleSubmit(onSubmit)}>
-                    <div className="form-group">
+                    <div className="input-group">
                         <label htmlFor="username">Username</label>
                         <input
                             type="text"
-                            className="form-control"
+                            className="input-field"
                             name="username"
                             {...register('username', { required: "Username is required" })}
                         />
                         {errors.username && <div className="alert alert-danger">{errors.username.message}</div>}
                     </div>
 
-                    <div className="form-group">
+                    <div className="input-group">
                         <label htmlFor="password">Password</label>
                         <input
                             type="password"
-                            className="form-control"
+                            className="input-field"
                             name="password"
                             {...register('password', { required: "Password is required" })}
                         />
                         {errors.password && <div className="alert alert-danger">{errors.password.message}</div>}
                     </div>
 
-                    <div className="form-group">
-                        <button className="btn btn-primary btn-block" disabled={loading}>
+                    <div className="input-group">
+                        <button className="submit-btn" disabled={loading}>
                             {loading && <span className="spinner-border spinner-border-sm"></span>}
                             <span>Login</span>
                         </button>
                     </div>
 
                     {message && (
-                        <div className="form-group">
+                        <div className="input-group">
                             <div className="alert alert-danger" role="alert">
                                 {message}
                             </div>
                         </div>
                     )}
 
-                    <div className="form-group">
-                        <button type="button" className="btn btn-link" onClick={handleRegisterRedirect}>
+                    <div className="input-group">
+                        <button type="button" className="register-redirect-btn" onClick={handleRegisterRedirect}>
                             Don't have an account? Register here
                         </button>
                     </div>

@@ -1,4 +1,4 @@
-function Dropdown({ label, value, onChange, options, disabled, placeholder }) {
+function Dropdown({ label, value, onChange, options, disabled, placeholder, required }) {
 
   return (
     <div className="form-group">
@@ -7,7 +7,7 @@ function Dropdown({ label, value, onChange, options, disabled, placeholder }) {
         value={value}
         onChange={onChange}
         disabled={disabled}
-        required
+        required={required}
       >
         <option value="">{placeholder}</option>
         {options.map((option) => (

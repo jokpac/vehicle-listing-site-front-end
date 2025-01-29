@@ -1,0 +1,28 @@
+.filter-card {
+    max-height: 80vh;
+    overflow-y: auto;
+    padding-right: 10px;
+}
+
+.filter-row {
+    display: flex;
+    gap: 15px;
+    margin-right: 20px;
+}
+
+.filter-row input,
+.filter-row select {
+    flex: 1;
+}
+
+.reset-filters-btn {
+    background-color: #ff6347;
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.reset-filters-btn:hover {
+    background-color: #ff4500;
+}

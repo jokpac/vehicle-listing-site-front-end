@@ -1,9 +1,12 @@
 import React, { useState } from "react";
+import "./Register.css"
 import { useForm } from "react-hook-form";
 import { isEmail } from "validator";
+import { useNavigate } from "react-router-dom";
 import AuthService from "../../services/AuthService";
 
 const Register = () => {
+    const navigate = useNavigate();
     const {
         register,
         handleSubmit,
@@ -37,18 +40,21 @@ const Register = () => {
         }
     };
 
-    return (
-        <div className="col-md-12">
-            <div className="card card-container">
+    const handleLoginRedirect = () => {
+        navigate("/login");
+    };
 
+    return (
+        <div className="register-container">
+            <div className="register-card">
                 <form onSubmit={handleSubmit(handleRegister)}>
                     {!successful && (
                         <div>
-                            <div className="form-group">
+                            <div className="input-group">
                                 <label htmlFor="username">Username</label>
                                 <input
                                     type="text"
-                                    className="form-control"
+                                    className="input-field"
                                     {...register("username", {
                                         required: "This field is required!",
                                         minLength: {
@@ -62,17 +68,17 @@ const Register = () => {
                                     })}
                                 />
                                 {errors.username && (
-                                    <div className="alert alert-danger">
+                                    <div className="error-message">
                                         {errors.username.message}
                                     </div>
                                 )}
                             </div>
 
-                            <div className="form-group">
+                            <div className="input-group">
                                 <label htmlFor="email">Email</label>
                                 <input
                                     type="text"
-                                    className="form-control"
+                                    className="input-field"
                                     {...register("email", {
                                         required: "This field is required!",
                                         validate: (value) =>
@@ -80,15 +86,15 @@ const Register = () => {
                                     })}
                                 />
                                 {errors.email && (
-                                    <div className="alert alert-danger">{errors.email.message}</div>
+                                    <div className="error-message">{errors.email.message}</div>
                                 )}
                             </div>
 
-                            <div className="form-group">
+                            <div className="input-group">
                                 <label htmlFor="password">Password</label>
                                 <input
                                     type="password"
-                                    className="form-control"
+                                    className="input-field"
                                     {...register("password", {
                                         required: "This field is required!",
                                         minLength: {
@@ -102,17 +108,17 @@ const Register = () => {
                                     })}
                                 />
                                 {errors.password && (
-                                    <div className="alert alert-danger">
+                                    <div className="error-message">
                                         {errors.password.message}
                                     </div>
                                 )}
                             </div>
 
-                            <div className="form-group">
+                            <div className="input-group">
                                 <label htmlFor="passwordConfirmation">Confirm Password</label>
                                 <input
                                     type="password"
-                                    className="form-control"
+                                    className="input-field"
                                     {...register("passwordConfirmation", {
                                         required: "Please confirm your password!",
                                         validate: (value) =>
@@ -120,20 +126,20 @@ const Register = () => {
                                     })}
                                 />
                                 {errors.passwordConfirmation && (
-                                    <div className="alert alert-danger">
+                                    <div className="error-message">
                                         {errors.passwordConfirmation.message}
                                     </div>
                                 )}
                             </div>
 
-                            <div className="form-group">
-                                <button className="btn btn-primary btn-block">Sign Up</button>
+                            <div className="input-group">
+                                <button className="submit-btn">Sign Up</button>
                             </div>
                         </div>
                     )}
 
                     {message && (
-                        <div className="form-group">
+                        <div className="input-group">
                             <div
                                 className={
                                     successful ? "alert alert-success" : "alert alert-danger"
@@ -144,6 +150,15 @@ const Register = () => {
                             </div>
                         </div>
                     )}
+                    <div className="input-group">
+                        <button
+                            type="button"
+                            className="login-redirect-btn"
+                            onClick={handleLoginRedirect}
+                        >
+                            Already have an account? Login here
+                        </button>
+                    </div>
                 </form>
             </div>
         </div>

@@ -30,7 +30,7 @@ export function useListingForm(listingId, onSubmit) {
     model: "",
     imageURLs: [],
     listingStatus: "ACTIVE",
-    listingType: "SALE",
+    listingType: "",
   });
 
   const handleSubmit = async (e) => {

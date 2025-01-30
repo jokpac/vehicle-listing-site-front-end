@@ -1,7 +1,7 @@
 import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 import AuthService from "../services/AuthService";
-import "./Navbar.css";
+import "../styles/Navbar.css";
 import Swal from "sweetalert2";
 
 const Navbar = () => {

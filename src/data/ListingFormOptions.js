@@ -1,4 +1,4 @@
-import axios from "./AxiosConfig";
+import axios from "./AxiosInstance";
 
 export const fetchCountries = async () => {
   const response = await axios.get("/api/countries");

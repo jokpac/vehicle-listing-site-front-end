@@ -1,13 +1,14 @@
 import React from "react";
-import "./AddListingForm.css";
+import "../styles/ListingForm.css";
 import ListingService from "../services/ListingService";
-import { useListingForm } from "../hooks/useListingForm";
+import { useListingForm } from "../utils/listingFormUtils";
 import { useNavigate, useParams } from "react-router-dom";
 import Dropdown from "../components/Form/Dropdown";
 import TextArea from "../components/Form/TextArea";
 import TextInput from "../components/Form/TextInput";
+import ImageUpload from "../utils/imageUpload";
 
-const AddListingForm = () => {
+const ListingForm = () => {
   const { listingId } = useParams();
   const navigate = useNavigate();
   const imageURL = `http://localhost:8080/images`;
@@ -108,31 +109,11 @@ const AddListingForm = () => {
       />
 
       {/* Image Upload Section */}
-      <fieldset className="image-upload-section">
-        <legend>Images</legend>
-
-        <input
-          type="file"
-          accept="image/*"
-          onChange={(e) => {
-            if (e.target.files[0]) {
-              uploadImage(e.target.files[0]);
-            }
-          }}
-        />
-
-        <div className="uploaded-images">
-          {uploadedImages.map((image) => (
-            <div key={image.id} className="uploaded-image">
-              <img
-                src={`${imageURL}/${image.id}`}
-                alt={`Uploaded ${image.fileName}`}
-                className="image-preview"
-              />
-            </div>
-          ))}
-        </div>
-      </fieldset>
+      <ImageUpload
+        uploadedImages={uploadedImages}
+        uploadImage={uploadImage}
+        imageURL={imageURL}
+      />
 
       {/* Dropdowns */}
       <Dropdown
@@ -221,4 +202,4 @@ const AddListingForm = () => {
   );
 }
 
-export default AddListingForm;
+export default ListingForm;

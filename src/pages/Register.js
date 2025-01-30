@@ -1,9 +1,9 @@
 import React, { useState } from "react";
-import "./Register.css"
+import "../styles/Register.css"
 import { useForm } from "react-hook-form";
 import { isEmail } from "validator";
 import { useNavigate } from "react-router-dom";
-import AuthService from "../../services/AuthService";
+import AuthService from "../services/AuthService";
 
 const Register = () => {
     const navigate = useNavigate();

@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import './ListingDetails.css';
-import axios from '../data/AxiosConfig';
+import '../styles/ListingDetails.css';
+import axiosInstance from '../data/AxiosInstance';
 
 function ListingDetails() {
   const { id } = useParams();
@@ -9,19 +9,21 @@ function ListingDetails() {
   const [error, setError] = useState(null);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
-  const baseURL = axios.defaults.baseURL;
+  const baseURL = axiosInstance.defaults.baseURL;
 
-  if (!listing && !error) {
-    axios
-      .get(`/api/listings/${id}`)
-      .then((response) => {
+  useEffect(() => {
+    const fetchListing = async () => {
+      try {
+        const response = await axiosInstance.get(`/api/listings/${id}`);
         setListing(response.data);
-      })
-      .catch((err) => {
+      } catch (err) {
         setError('Failed to fetch listing details');
         console.error('Error fetching listing:', err);
-      });
-  }
+      }
+    };
+
+    fetchListing();
+  }, [id]);
 
   if (error) {
     return <div className="error-message">{error}</div>;

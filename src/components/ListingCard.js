@@ -1,14 +1,9 @@
 import React from 'react';
-import './ListingCard.css';
+import '../styles/ListingCard.css';
 import { useNavigate } from 'react-router-dom';
-import authHeader from '../../services/AuthHeader';
-import axios from '/React/vehicle-listings-site-react/src/data/AxiosConfig';
+import axiosInstance from '../data/AxiosInstance';
 
 const ListingCard = ({ listing, user, onDelete }) => {
-
-  console.log(user);
-
-  const API_URL = 'http://localhost:8080/api';
 
   const canDelete = user?.roles?.some(role => ["ADMIN", "MODERATOR"].includes(role));
   const navigate = useNavigate();
@@ -21,28 +16,17 @@ const ListingCard = ({ listing, user, onDelete }) => {
     event.stopPropagation();
 
     try {
-      const response = await fetch(`${API_URL}/listings/${listingId}`, {
-        method: 'DELETE',
-        headers: {
-          ...authHeader(),
-          'Content-Type': 'application/json',
-        },
-      });
+      await axiosInstance.delete(`/api/listings/${listingId}`);
 
-      if (response.ok) {
-        alert('Listing deleted successfully!');
-        onDelete(listingId);
-      } else {
-        const errorMessage = await response.text();
-        alert(`Failed to delete the listing: ${errorMessage}`);
-      }
+      alert('Listing deleted successfully!');
+      onDelete(listingId);
     } catch (error) {
       console.error('Error deleting listing:', error);
-      alert('An error occurred while trying to delete the listing.');
+      alert(`Failed to delete the listing: ${error.response?.data || error.message}`);
     }
   };
 
-  const baseURL = axios.defaults.baseURL;
+  const baseURL = axiosInstance.defaults.baseURL;
   const imageUrl = listing.imageURLs?.[0]
     ? baseURL + listing.imageURLs[0]
     : 'No_Image_Available.jpg';

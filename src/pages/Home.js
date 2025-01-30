@@ -1,8 +1,8 @@
 import { useEffect, useState, useCallback } from 'react';
-import './Home.css';
-import axios from '../data/AxiosConfig';
+import '../styles/Home.css';
+import axiosInstance from '../data/AxiosInstance';
 import AuthService from '../services/AuthService';
-import ListingCard from '../components/Listing/ListingCard';
+import ListingCard from '../components/ListingCard';
 import FilterCard from '../components/FilterCard';
 import { filterListings } from '../utils/filterUtils';
 
@@ -13,12 +13,12 @@ function Home() {
 
   const fetchListings = useCallback(async () => {
     try {
-      const response = await axios.get('/api/listings');
+      const response = await axiosInstance.get('/api/listings');
       const activeListings = response.data.filter(listing => listing.listingStatus === 'ACTIVE');
       setListings(activeListings);
       setFilteredListings(activeListings);
-    } catch (e) {
-      console.error('Error fetching listings: ', e);
+    } catch (error) {
+      console.error('Error fetching listings:', error);
       setListings([]);
       setFilteredListings([]);
     }

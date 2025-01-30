@@ -1,9 +1,10 @@
-function Dropdown({ label, value, onChange, options, disabled, placeholder, required }) {
+function Dropdown({ id, label, value, onChange, options = [], disabled, placeholder, required }) {
 
   return (
     <div className="form-group">
-      <label>{label}</label>
+      <label htmlFor={id}>{label}</label>
       <select
+        id={id}
         value={value}
         onChange={onChange}
         disabled={disabled}

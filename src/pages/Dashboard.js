@@ -1,4 +1,4 @@
-import './Dashboard.css'
+import '../styles/Dashboard.css'
 import React, { useEffect, useState } from "react";
 import AuthService from "../services/AuthService";
 import ListingService from "../services/ListingService";
@@ -76,7 +76,7 @@ const Dashboard = () => {
                                 <li key={listing.id} className="listing-item">
                                     <h3
                                         className="title"
-                                        style={{ cursor: "pointer", color: "blue" }}
+                                        style={{ cursor: "pointer", color: "black" }}
                                         onClick={() => handleViewDetails(listing.id)}
                                     >
                                         {listing.title}

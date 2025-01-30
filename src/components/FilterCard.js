@@ -1,4 +1,4 @@
-import "./FilterCard.css";
+import "../styles/FilterCard.css";
 import { useFilterState } from "../utils/filterState";
 import Dropdown from "../components/Form/Dropdown";
 import TextInput from "../components/Form/TextInput";

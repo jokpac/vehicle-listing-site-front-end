@@ -1,6 +1,5 @@
-import React from 'react';
-
 function TextArea({ id, label, value, onChange, required }) {
+
   return (
     <div className="form-group">
       <label htmlFor={id}>{label}</label>

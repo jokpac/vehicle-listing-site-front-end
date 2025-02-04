@@ -33,6 +33,10 @@ function ListingDetails() {
     return <div>Loading...</div>;
   }
 
+  const formatMonth = (month) => {
+    return month?.toString().padStart(2, '0') || '';
+  };
+
   const handleThumbnailClick = (index) => {
     setCurrentImageIndex(index);
   };
@@ -47,6 +51,10 @@ function ListingDetails() {
     );
   };
 
+  const imageUrl = listing.imageURLs?.[currentImageIndex]
+  ? baseURL + listing.imageURLs[currentImageIndex]
+  : 'No_Image_Available.jpg';
+
   return (
     <div className="listing-details-container">
       <div className="listing-main-image-container">
@@ -55,8 +63,8 @@ function ListingDetails() {
         </button>
 
         <img
-          src={baseURL + listing.imageURLs[currentImageIndex]}
-          alt={`listing-${currentImageIndex}`}
+          src={imageUrl}
+          alt={imageUrl}
           className="listing-main-image"
         />
 
@@ -82,7 +90,7 @@ function ListingDetails() {
       <div className="listing-details-parameters">
         <div className="parameter-item">
           <div className="parameter-label">Date of manufacture</div>
-          <div className="parameter-value">{`${listing.year}-${listing.month}`}</div>
+          <div className="parameter-value">{listing.year}-{formatMonth(listing.month)}</div>
         </div>
         <div className="parameter-item">
           <div className="parameter-label">Make & Model</div>

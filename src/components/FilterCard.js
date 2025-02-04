@@ -42,8 +42,8 @@ const FilterCard = ({ onFilter }) => {
             </div>
 
             <div className="filter-row">
-                <TextInput id="engineSizeMin" label="Min Engine Size (L)" type="number" value={filters.engineSizeMin} onChange={(e) => handleChange("engineSizeMin", e.target.value)} />
-                <TextInput id="engineSizeMax" label="Max Engine Size (L)" type="number" value={filters.engineSizeMax} onChange={(e) => handleChange("engineSizeMax", e.target.value)} />
+                <TextInput id="engineSizeMin" label="Min Engine Size (L)" type="number" value={filters.engineSizeMin} onChange={(e) => handleChange("engineSizeMin", e.target.value)} allowDecimals={true}/>
+                <TextInput id="engineSizeMax" label="Max Engine Size (L)" type="number" value={filters.engineSizeMax} onChange={(e) => handleChange("engineSizeMax", e.target.value)} allowDecimals={true}/>
             </div>
 
             <Dropdown

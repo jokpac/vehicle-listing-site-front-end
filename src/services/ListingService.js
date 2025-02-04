@@ -53,7 +53,7 @@ const updateListingStatus = async (listingId, status) => {
 
 const submitListing = async (listingData) => {
     try {
-        const response = await axiosInstance.post('/listings', listingData);
+        const response = await axiosInstance.post('api/listings', listingData);
         console.log("Listing submitted successfully:", response.data);
         return response.data;
     } catch (error) {

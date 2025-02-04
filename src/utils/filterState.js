@@ -80,7 +80,18 @@ export const useFilterState = () => {
 
     const handleChange = (key, value) => {
         const stringFields = ['fuelType', 'transmission', 'drivenWheels', 'listingType'];
-        const newValue = stringFields.includes(key) ? value || "" : value ? Number(value) : "";
+        const decimalFields = ['engineSizeMin', 'engineSizeMax'];
+        
+        let newValue;
+        if (stringFields.includes(key)) {
+            newValue = value || "";
+        } else if (decimalFields.includes(key)) {
+            // For engine size, preserve the decimal input
+            newValue = value === '' ? '' : value;
+        } else {
+            // For other numeric fields, convert to number or empty string
+            newValue = value ? Number(value) : "";
+        }
 
         setFilters((prev) => ({
             ...prev,

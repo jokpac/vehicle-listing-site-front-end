@@ -31,6 +31,10 @@ const ListingCard = ({ listing, user, onDelete }) => {
     ? baseURL + listing.imageURLs[0]
     : 'No_Image_Available.jpg';
 
+  const formatMonth = (month) => {
+    return month?.toString().padStart(2, '0') || '';
+  };
+
   return (
     <div className="listing-card" onClick={handleClick}>
       <img src={imageUrl} alt={imageUrl} className="listing-image" />
@@ -38,7 +42,7 @@ const ListingCard = ({ listing, user, onDelete }) => {
         <h3 className="listing-title">{listing.title}</h3>
         <p className="listing-price">€{listing.price}</p>
         <p className="listing-year-make-model">
-          {listing.year}-{listing.month} {listing.make.name} {listing.model.name}
+          {listing.year}-{formatMonth(listing.month)} {listing.make.name} {listing.model.name}
         </p>
         <p className="listing-mileage">Mileage: {listing.mileage} km</p>
         <p className="listing-fuel-transmission">

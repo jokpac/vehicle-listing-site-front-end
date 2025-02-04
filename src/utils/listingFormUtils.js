@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { fetchCountries, fetchCities, fetchMakes, fetchModels } from "../data/ListingFormOptions";
 import ListingService from "../services/ListingService";
+import { validateListing } from "./formValidationUtils";
 
 export function useListingForm(listingId, onSubmit) {
   const [countries, setCountries] = useState([]);
@@ -9,10 +10,12 @@ export function useListingForm(listingId, onSubmit) {
   const [models, setModels] = useState([]);
   const [uploadedImages, setUploadedImages] = useState([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errors, setErrors] = useState({});
+  const [touched, setTouched] = useState({});
 
   const imageUploadURL = 'http://localhost:8080/images/upload';
 
-  const [formData, setFormData] = useState({
+  const initialFormState = {
     title: "",
     price: "",
     year: "",
@@ -28,38 +31,104 @@ export function useListingForm(listingId, onSubmit) {
     city: "",
     make: "",
     model: "",
-    imageURLs: [],
-    listingStatus: "ACTIVE",
     listingType: "",
-  });
+    listingStatus: "ACTIVE",
+    imageURLs: []
+  };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const [formData, setFormData] = useState(initialFormState);
 
-    if (isSubmitting) return;
+  const validateField = (name, value) => {
+    const validationResult = validateListing({ ...formData, [name]: value });
+    return validationResult[name];
+  };
+
+  const handleChange = (name, value) => {
+    setFormData(prev => ({
+      ...prev,
+      [name]: value,
+      ...(name === "country" ? { city: "" } : {}),
+      ...(name === "make" ? { model: "" } : {})
+    }));
+
+    // Mark field as touched
+    setTouched(prev => ({
+      ...prev,
+      [name]: true
+    }));
+
+    // Only validate if field has been touched
+    if (touched[name]) {
+      const fieldError = validateField(name, value);
+      setErrors(prev => ({
+        ...prev,
+        [name]: fieldError
+      }));
+    }
+  };
+
+  const handleBlur = (name) => {
+    setTouched(prev => ({
+      ...prev,
+      [name]: true
+    }));
+    const fieldError = validateField(name, formData[name]);
+    setErrors(prev => ({
+      ...prev,
+      [name]: fieldError
+    }));
+  };
+
+  const handleSubmit = async (e, directPayload = null) => {
+    if (e) {
+      e.preventDefault();
+    }
+
     setIsSubmitting(true);
 
-    const payload = {
-      ...formData,
-      price: Number(formData.price),
-      year: Number(formData.year),
-      month: Number(formData.month),
-      engineSize: parseFloat(formData.engineSize),
-      enginePower: parseInt(formData.enginePower, 10),
-      countryId: formData.country,
-      cityId: formData.city,
-      makeId: formData.make,
-      modelId: formData.model,
-      imageURLs: uploadedImages.map(image => `images/${image.id}`)
-    };
-
     try {
+      const payload = directPayload || {
+        title: formData.title,
+        price: Number(formData.price),
+        year: Number(formData.year),
+        month: Number(formData.month),
+        mileage: Number(formData.mileage),
+        description: formData.description,
+        engineSize: Number(formData.engineSize),
+        enginePower: Number(formData.enginePower),
+        fuelType: formData.fuelType,
+        transmission: formData.transmission,
+        drivenWheels: formData.drivenWheels,
+        countryId: formData.country,
+        cityId: formData.city,
+        makeId: formData.make,
+        modelId: formData.model,
+        listingType: formData.listingType,
+        images: uploadedImages,
+        imageURLs: uploadedImages.map(image => `images/${image.id}`),
+        listingStatus: "ACTIVE"
+      };
+
+      const validationErrors = validateListing(formData);
+      if (Object.keys(validationErrors).length > 0) {
+        setErrors(validationErrors);
+        return;
+      }
+
       await onSubmit(payload);
+      setErrors({});
     } catch (error) {
-      console.error("Error submitting form:", error.message || error);
+      console.error('Error submitting form:', error);
     } finally {
       setIsSubmitting(false);
     }
+  };
+
+  const resetForm = () => {
+    setFormData(initialFormState);
+    setErrors({});
+    setTouched({});
+    setUploadedImages([]);
   };
 
   useEffect(() => {
@@ -83,11 +152,11 @@ export function useListingForm(listingId, onSubmit) {
             city: listingData.city?.id || "",
             make: listingData.make?.id || "",
             model: listingData.model?.id || "",
-            imageURLs: listingData.imageURLs || [],
-            listingStatus: listingData.listingStatus || "ACTIVE",
             listingType: listingData.listingType || "SALE",
+            listingStatus: listingData.listingStatus || "ACTIVE",
+            imageURLs: listingData.imageURLs || []
           });
-  
+
           if (listingData.imageURLs) {
             setUploadedImages(
               listingData.imageURLs.map((url) => {
@@ -103,7 +172,7 @@ export function useListingForm(listingId, onSubmit) {
           console.error("Error fetching listing data:", error.message);
         }
       };
-  
+
       fetchListingData();
     }
   }, [listingId]);
@@ -201,46 +270,17 @@ export function useListingForm(listingId, onSubmit) {
     loadModels();
   }, [formData.make]);
 
-  const handleChange = (key, value) => {
-    setFormData((prev) => ({
-      ...prev,
-      [key]: value,
-      ...(key === "country" ? { city: "" } : {}),
-      ...(key === "make" ? { model: "" } : {}),
-    }));
-  };
-
-  const resetForm = () => {
-    setFormData({
-      title: "",
-      price: "",
-      year: "",
-      month: "",
-      mileage: "",
-      description: "",
-      engineSize: "",
-      enginePower: "",
-      fuelType: "",
-      transmission: "",
-      drivenWheels: "",
-      country: "",
-      city: "",
-      make: "",
-      model: "",
-      imageURLs: [],
-      listingStatus: "ACTIVE",
-      listingType: "SALE"
-    });
-  };
-
   return {
     formData,
     options,
     handleChange,
     handleSubmit,
+    handleBlur,
     uploadedImages,
     uploadImage,
-    resetForm,
-    isSubmitting
+    isSubmitting,
+    errors,
+    touched,
+    resetForm
   };
 }

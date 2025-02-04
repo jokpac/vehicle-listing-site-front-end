@@ -1,14 +1,16 @@
-function Dropdown({ id, label, value, onChange, options = [], disabled, placeholder, required }) {
-
+function Dropdown({ id, label, value, onChange, onBlur, options = [], disabled, placeholder, required, error }) {
   return (
     <div className="form-group">
-      <label htmlFor={id}>{label}</label>
+      <label htmlFor={id} className={required ? 'required' : ''}>
+        {label}
+      </label>
       <select
         id={id}
-        value={value}
+        value={value || ''}
         onChange={onChange}
+        onBlur={onBlur}
         disabled={disabled}
-        required={required}
+        className={error ? 'error' : ''}
       >
         <option value="">{placeholder}</option>
         {options.map((option) => (
@@ -17,6 +19,7 @@ function Dropdown({ id, label, value, onChange, options = [], disabled, placehol
           </option>
         ))}
       </select>
+      {error && <span className="error-message">{error}</span>}
     </div>
   );
 }

@@ -99,14 +99,14 @@ export function useListingForm(listingId, onSubmit) {
         fuelType: formData.fuelType,
         transmission: formData.transmission,
         drivenWheels: formData.drivenWheels,
-        countryId: formData.country,
-        cityId: formData.city,
-        makeId: formData.make,
-        modelId: formData.model,
+        countryId: Number(formData.country),
+        cityId: Number(formData.city),
+        makeId: Number(formData.make),
+        modelId: Number(formData.model),
         listingType: formData.listingType,
         images: uploadedImages,
         imageURLs: uploadedImages.map(image => `images/${image.id}`),
-        listingStatus: "ACTIVE"
+        listingStatus: listingId ? formData.listingStatus : "ACTIVE"
       };
 
       const validationErrors = validateListing(formData);

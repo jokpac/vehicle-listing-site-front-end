@@ -19,7 +19,6 @@ const Login = () => {
             .then((responseData) => {
                 console.log("Login successful: ", responseData);
                 navigate("/dashboard");
-                window.location.reload();
             })
             .catch((error) => {
                 const resMessage =

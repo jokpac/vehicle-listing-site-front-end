@@ -45,7 +45,6 @@ instance.interceptors.response.use(
         if (error.response && error.response.status === 401) {
             console.error("Authentication error: Token expired or invalid.");
             sessionStorage.removeItem("user");
-            window.location.reload();
         }
 
         return Promise.reject(error);

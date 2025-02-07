@@ -86,10 +86,8 @@ export const useFilterState = () => {
         if (stringFields.includes(key)) {
             newValue = value || "";
         } else if (decimalFields.includes(key)) {
-            // For engine size, preserve the decimal input
             newValue = value === '' ? '' : value;
         } else {
-            // For other numeric fields, convert to number or empty string
             newValue = value ? Number(value) : "";
         }
 

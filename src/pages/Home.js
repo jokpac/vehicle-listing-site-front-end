@@ -5,6 +5,7 @@ import AuthService from '../services/AuthService';
 import ListingCard from '../components/ListingCard';
 import FilterCard from '../components/FilterCard';
 import { filterListings } from '../utils/filterUtils';
+import Swal from "sweetalert2";
 
 function Home() {
   const [listings, setListings] = useState([]);
@@ -29,9 +30,33 @@ function Home() {
     setUser(AuthService.getCurrentUser());
   }, [fetchListings]);
 
-  const handleDeleteListing = (listingId) => {
-    setListings(prevListings => prevListings.filter(listing => listing.id !== listingId));
-    setFilteredListings(prevListings => prevListings.filter(listing => listing.id !== listingId));
+  const handleDeleteListing = async (listingId) => {
+    const result = await Swal.fire({
+      title: "Are you sure?",
+      text: "This action cannot be undone!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#3085d6",
+      confirmButtonText: "Yes, delete it!",
+    });
+
+    if (!result.isConfirmed) return;
+
+    try {
+      await axiosInstance.delete(`/api/listings/${listingId}`);
+      setListings((prevListings) =>
+        prevListings.filter((listing) => listing.id !== listingId)
+      );
+      setFilteredListings((prevListings) =>
+        prevListings.filter((listing) => listing.id !== listingId)
+      );
+
+      await Swal.fire("Deleted!", "The listing has been removed.", "success"); // ✅ Ensures correct flow
+    } catch (error) {
+      console.error("Error deleting listing:", error);
+      Swal.fire("Error!", "Failed to delete the listing.", "error");
+    }
   };
 
   const handleFilter = (filters) => {

@@ -12,24 +12,15 @@ const ListingCard = ({ listing, user, onDelete }) => {
     navigate(`/listing/${listing.id}`);
   };
 
-  const handleDelete = async (event, listingId) => {
+  const handleDelete = (event) => {
     event.stopPropagation();
-
-    try {
-      await axiosInstance.delete(`/api/listings/${listingId}`);
-
-      alert('Listing deleted successfully!');
-      onDelete(listingId);
-    } catch (error) {
-      console.error('Error deleting listing:', error);
-      alert(`Failed to delete the listing: ${error.response?.data || error.message}`);
-    }
+    onDelete(listing.id);
   };
 
   const baseURL = axiosInstance.defaults.baseURL;
   const imageUrl = listing.imageURLs?.[0]
     ? baseURL + listing.imageURLs[0]
-    : 'No_Image_Available.jpg';
+    : '/No_Image_Available.jpg';
 
   const formatMonth = (month) => {
     return month?.toString().padStart(2, '0') || '';

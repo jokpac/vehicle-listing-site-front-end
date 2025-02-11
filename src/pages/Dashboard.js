@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import AuthService from "../services/AuthService";
 import ListingService from "../services/ListingService";
 import { useNavigate } from "react-router-dom";
+import Swal from "sweetalert2";
 
 const Dashboard = () => {
     const [user, setUser] = useState(null);
@@ -36,15 +37,28 @@ const Dashboard = () => {
     };
 
     const handleDelete = async (listingId) => {
-        try {
-            await ListingService.deleteListing(listingId);
-            setListings((prevListings) =>
-                prevListings.filter((listing) => listing.id !== listingId)
-            );
-            alert("Listing deleted successfully!");
-        } catch (error) {
-            console.error("Error deleting listing:", error);
-            alert("Failed to delete the listing.");
+        const result = await Swal.fire({
+            title: "Are you sure?",
+            text: "You won't be able to revert this!",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#d33",
+            cancelButtonColor: "#3085d6",
+            confirmButtonText: "Yes, delete it!",
+        });
+
+        if (result.isConfirmed) {
+            try {
+                await ListingService.deleteListing(listingId);
+                setListings((prevListings) =>
+                    prevListings.filter((listing) => listing.id !== listingId)
+                );
+
+                Swal.fire("Deleted!", "Your listing has been deleted.", "success");
+            } catch (error) {
+                console.error("Error deleting listing:", error);
+                Swal.fire("Error!", "Failed to delete the listing.", "error");
+            }
         }
     };
 

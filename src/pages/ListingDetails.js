@@ -53,7 +53,7 @@ function ListingDetails() {
 
   const imageUrl = listing.imageURLs?.[currentImageIndex]
   ? baseURL + listing.imageURLs[currentImageIndex]
-  : 'No_Image_Available.jpg';
+  : '/No_Image_Available.jpg';
 
   return (
     <div className="listing-details-container">

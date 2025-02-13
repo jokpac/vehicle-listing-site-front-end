@@ -3,7 +3,7 @@ import "../styles/Register.css"
 import { useForm } from "react-hook-form";
 import { isEmail } from "validator";
 import { useNavigate } from "react-router-dom";
-import AuthService from "../services/AuthService";
+import AuthService from "../services/AuthService"; // Authentication service for user registration
 
 const Register = () => {
     const navigate = useNavigate();
@@ -12,12 +12,14 @@ const Register = () => {
         handleSubmit,
         watch,
         formState: { errors },
-    } = useForm();
+    } = useForm();  // Form handling with validation
+
     const [successful, setSuccessful] = useState(false);
     const [message, setMessage] = useState("");
 
     const password = watch("password");
 
+    // Function to handle registration submission
     const handleRegister = async (data) => {
         setMessage("");
         setSuccessful(false);
@@ -31,6 +33,7 @@ const Register = () => {
             setMessage(response.data.message);
             setSuccessful(true);
         } catch (error) {
+            // Extract error message from response or use generic message
             const resMessage =
                 (error.response && error.response.data && error.response.data.message) ||
                 error.message ||
@@ -50,6 +53,7 @@ const Register = () => {
                 <form onSubmit={handleSubmit(handleRegister)}>
                     {!successful && (
                         <div>
+                            {/* Username input field */}
                             <div className="input-group">
                                 <label htmlFor="username">Username</label>
                                 <input
@@ -74,6 +78,7 @@ const Register = () => {
                                 )}
                             </div>
 
+                            {/* Email input field */}
                             <div className="input-group">
                                 <label htmlFor="email">Email</label>
                                 <input
@@ -90,6 +95,7 @@ const Register = () => {
                                 )}
                             </div>
 
+                            {/* Password input field */}
                             <div className="input-group">
                                 <label htmlFor="password">Password</label>
                                 <input
@@ -114,6 +120,7 @@ const Register = () => {
                                 )}
                             </div>
 
+                            {/* Confirm Password input field */}
                             <div className="input-group">
                                 <label htmlFor="passwordConfirmation">Confirm Password</label>
                                 <input
@@ -132,12 +139,14 @@ const Register = () => {
                                 )}
                             </div>
 
+                            {/* Submit button */}
                             <div className="input-group">
                                 <button className="submit-btn">Sign Up</button>
                             </div>
                         </div>
                     )}
 
+                    {/* Display error or success message */}
                     {message && (
                         <div className="input-group">
                             <div
@@ -150,6 +159,7 @@ const Register = () => {
                             </div>
                         </div>
                     )}
+                    {/* Redirect to login page */}
                     <div className="input-group">
                         <button
                             type="button"

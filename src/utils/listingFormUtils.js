@@ -1,20 +1,18 @@
 import { useState, useEffect } from "react";
-import { fetchCountries, fetchCities, fetchMakes, fetchModels } from "../data/ListingFormOptions";
 import ListingService from "../services/ListingService";
 import { validateListing } from "./formValidationUtils";
+import { getDropdownOptions } from "../data/DropdownOptions";
+import { useDropdownData } from "./dataLoader";
+import { uploadImage as uploadImageFunction } from "./imageUpload";
 
 export function useListingForm(listingId, onSubmit) {
-  const [countries, setCountries] = useState([]);
-  const [cities, setCities] = useState([]);
-  const [makes, setMakes] = useState([]);
-  const [models, setModels] = useState([]);
-  const [uploadedImages, setUploadedImages] = useState([]);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [errors, setErrors] = useState({});
-  const [touched, setTouched] = useState({});
 
-  const imageUploadURL = 'http://localhost:8080/images/upload';
+  const [uploadedImages, setUploadedImages] = useState([]); // State for storing uploaded images
+  const [isSubmitting, setIsSubmitting] = useState(false); // State to track form submission status
+  const [errors, setErrors] = useState({}); // State for tracking validation errors
+  const [touched, setTouched] = useState({}); // State to track which fields have been interacted with
 
+  // Initial state of the form
   const initialFormState = {
     title: "",
     price: "",
@@ -36,19 +34,33 @@ export function useListingForm(listingId, onSubmit) {
     imageURLs: []
   };
 
+  // State for managing form data
   const [formData, setFormData] = useState(initialFormState);
 
+  // Handles countries, cities, makes and models field logic
+  const { countries, cities, makes, models } = useDropdownData(formData.country, formData.make);
+
+  // Get dropdown options dynamically
+  const options = getDropdownOptions({ countries, cities, makes, models });
+
+  // Handles image upload logic
+  const uploadImage = (file) => {
+    uploadImageFunction(file, setUploadedImages);
+  };
+
+  // Validates a single field and returns error message if applicable
   const validateField = (name, value) => {
     const validationResult = validateListing({ ...formData, [name]: value });
     return validationResult[name];
   };
 
+  // Handles form field changes and updates state accordingly
   const handleChange = (name, value) => {
     setFormData(prev => ({
       ...prev,
       [name]: value,
-      ...(name === "country" ? { city: "" } : {}),
-      ...(name === "make" ? { model: "" } : {})
+      ...(name === "country" ? { city: "" } : {}), // Reset city if country changes
+      ...(name === "make" ? { model: "" } : {}) // Reset model if make changes
     }));
 
     // Mark field as touched
@@ -57,7 +69,7 @@ export function useListingForm(listingId, onSubmit) {
       [name]: true
     }));
 
-    // Only validate if field has been touched
+    // Validate field only if it has been touched
     if (touched[name]) {
       const fieldError = validateField(name, value);
       setErrors(prev => ({
@@ -67,6 +79,7 @@ export function useListingForm(listingId, onSubmit) {
     }
   };
 
+  // Handles field blur event for validation
   const handleBlur = (name) => {
     setTouched(prev => ({
       ...prev,
@@ -79,6 +92,7 @@ export function useListingForm(listingId, onSubmit) {
     }));
   };
 
+  // Handles form submission
   const handleSubmit = async (e, directPayload = null) => {
     if (e) {
       e.preventDefault();
@@ -87,6 +101,7 @@ export function useListingForm(listingId, onSubmit) {
     setIsSubmitting(true);
 
     try {
+      // Construct payload for submission
       const payload = directPayload || {
         title: formData.title,
         price: Number(formData.price),
@@ -109,12 +124,12 @@ export function useListingForm(listingId, onSubmit) {
         listingStatus: listingId ? formData.listingStatus : "ACTIVE"
       };
 
+      // Validate form data before submission
       const validationErrors = validateListing(formData);
       if (Object.keys(validationErrors).length > 0) {
         setErrors(validationErrors);
         return;
       }
-
       await onSubmit(payload);
       setErrors({});
     } catch (error) {
@@ -124,6 +139,7 @@ export function useListingForm(listingId, onSubmit) {
     }
   };
 
+  // Resets the form to its initial state
   const resetForm = () => {
     setFormData(initialFormState);
     setErrors({});
@@ -131,6 +147,7 @@ export function useListingForm(listingId, onSubmit) {
     setUploadedImages([]);
   };
 
+  // Fetches listing data if editing an existing listing
   useEffect(() => {
     if (listingId) {
       const fetchListingData = async () => {
@@ -152,7 +169,7 @@ export function useListingForm(listingId, onSubmit) {
             city: listingData.city?.id || "",
             make: listingData.make?.id || "",
             model: listingData.model?.id || "",
-            listingType: listingData.listingType || "SALE",
+            listingType: listingData.listingType || "",
             listingStatus: listingData.listingStatus || "ACTIVE",
             imageURLs: listingData.imageURLs || []
           });
@@ -176,99 +193,6 @@ export function useListingForm(listingId, onSubmit) {
       fetchListingData();
     }
   }, [listingId]);
-
-  // Uploading image
-  const uploadImage = async (file) => {
-    const formData = new FormData();
-    formData.append("file", file);
-
-    try {
-      const response = await fetch(`${imageUploadURL}`, {
-        method: "POST",
-        body: formData,
-      });
-
-      if (!response.ok) {
-        throw new Error(await response.text());
-      }
-
-      const result = await response.text();
-      const imageId = result.split(": ")[1];
-      setUploadedImages((prev) => [...prev, { id: imageId, fileName: file.name, file }]);
-    } catch (error) {
-      console.error("Image upload failed:", error.message);
-    }
-  };
-
-  // Options for dropdowns
-  const options = {
-
-    countries: countries.map(country => ({ value: country.id, label: country.name })),
-    cities: cities.map(city => ({ value: city.id, label: city.name })),
-    makes: makes.map(make => ({ value: make.id, label: make.name })),
-    models: models.map(model => ({ value: model.id, label: model.name })),
-
-    fuelTypes: [
-      { value: "PETROL", label: "Petrol" },
-      { value: "DIESEL", label: "Diesel" },
-      { value: "ELECTRIC", label: "Electric" },
-      { value: "HYBRID", label: "Hybrid" },
-    ],
-    transmissions: [
-      { value: "MANUAL", label: "Manual" },
-      { value: "AUTOMATIC", label: "Automatic" },
-    ],
-    drivenWheels: [
-      { value: "FWD", label: "Front-Wheel Drive" },
-      { value: "RWD", label: "Rear-Wheel Drive" },
-      { value: "AWD", label: "All-Wheel Drive" },
-    ],
-  };
-
-  useEffect(() => {
-    const loadInitialData = async () => {
-      try {
-        const [countryData, makeData] = await Promise.all([fetchCountries(), fetchMakes()]);
-        setCountries(countryData || []);
-        setMakes(makeData || []);
-      } catch (error) {
-        console.error("Error loading initial data:", error);
-      }
-    };
-    loadInitialData();
-  }, []);
-
-  useEffect(() => {
-    const loadCities = async () => {
-      if (!formData.country) {
-        setCities([]);
-        return;
-      }
-      try {
-        const cityData = await fetchCities(formData.country);
-        setCities(cityData || []);
-      } catch (error) {
-        console.error("Error loading cities:", error)
-      }
-    };
-    loadCities();
-  }, [formData.country]);
-
-  useEffect(() => {
-    const loadModels = async () => {
-      if (!formData.make) {
-        setModels([]);
-        return;
-      }
-      try {
-        const modelData = await fetchModels(formData.make);
-        setModels(modelData || []);
-      } catch (error) {
-        console.error("Error fetching models:", error);
-      }
-    };
-    loadModels();
-  }, [formData.make]);
 
   return {
     formData,

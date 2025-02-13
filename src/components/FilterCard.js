@@ -2,13 +2,20 @@ import "../styles/FilterCard.css";
 import { useFilterState } from "../utils/filterState";
 import Dropdown from "../components/Form/Dropdown";
 import TextInput from "../components/Form/TextInput";
+import { getDropdownOptions } from "../data/DropdownOptions";
 
 const FilterCard = ({ onFilter }) => {
+    // Initializes filter state and provides handlers for managing filter changes
     const { filters, handleChange, resetFilters, countries, cities, makes, models } = useFilterState();
 
+    // Loads options for dropdowns
+    const options = getDropdownOptions({ countries, cities, makes, models });
+
+    // Handles form submission by filtering out empty values and calling the provided onFilter function
     const handleSubmit = (e) => {
         e.preventDefault();
 
+        // Removes empty or null fields from the filter object before passing it to the onFilter callback
         const filteredData = Object.fromEntries(
             Object.entries(filters).filter(([_, value]) => value !== "" && value !== null)
         );
@@ -17,6 +24,7 @@ const FilterCard = ({ onFilter }) => {
         onFilter(filteredData);
     };
 
+    // Resets all filters to their initial state and clears applied filters
     const handleReset = () => {
         resetFilters();
         onFilter({});
@@ -42,19 +50,14 @@ const FilterCard = ({ onFilter }) => {
             </div>
 
             <div className="filter-row">
-                <TextInput id="engineSizeMin" label="Min Engine Size (L)" type="number" value={filters.engineSizeMin} onChange={(e) => handleChange("engineSizeMin", e.target.value)} allowDecimals={true}/>
-                <TextInput id="engineSizeMax" label="Max Engine Size (L)" type="number" value={filters.engineSizeMax} onChange={(e) => handleChange("engineSizeMax", e.target.value)} allowDecimals={true}/>
+                <TextInput id="engineSizeMin" label="Min Engine Size (L)" type="number" value={filters.engineSizeMin} onChange={(e) => handleChange("engineSizeMin", e.target.value)} allowDecimals={true} />
+                <TextInput id="engineSizeMax" label="Max Engine Size (L)" type="number" value={filters.engineSizeMax} onChange={(e) => handleChange("engineSizeMax", e.target.value)} allowDecimals={true} />
             </div>
 
             <Dropdown
                 id="fuelType"
                 label="Fuel Type"
-                options={[
-                    { value: "PETROL", label: "Petrol" },
-                    { value: "DIESEL", label: "Diesel" },
-                    { value: "ELECTRIC", label: "Electric" },
-                    { value: "HYBRID", label: "Hybrid" },
-                ]}
+                options={options.fuelTypes}
                 value={filters.fuelType}
                 onChange={(e) => handleChange("fuelType", e.target.value)}
                 placeholder="Select Fuel Type"
@@ -63,10 +66,7 @@ const FilterCard = ({ onFilter }) => {
             <Dropdown
                 id="transmission"
                 label="Transmission"
-                options={[
-                    { value: "MANUAL", label: "Manual" },
-                    { value: "AUTOMATIC", label: "Automatic" },
-                ]}
+                options={options.transmissions}
                 value={filters.transmission}
                 onChange={(e) => handleChange("transmission", e.target.value)}
                 placeholder="Select Transmission"
@@ -75,11 +75,7 @@ const FilterCard = ({ onFilter }) => {
             <Dropdown
                 id="drivenWheels"
                 label="Driven Wheels"
-                options={[
-                    { value: "FWD", label: "Front-Wheel Drive" },
-                    { value: "RWD", label: "Rear-Wheel Drive" },
-                    { value: "AWD", label: "All-Wheel Drive" },
-                ]}
+                options={options.drivenWheels}
                 value={filters.drivenWheels}
                 onChange={(e) => handleChange("drivenWheels", e.target.value)}
                 placeholder="Select Driven Wheels"
@@ -88,7 +84,7 @@ const FilterCard = ({ onFilter }) => {
             <Dropdown
                 id="country"
                 label="Country"
-                options={countries.map(c => ({ value: c.id, label: c.name }))}
+                options={options.countries}
                 value={filters.country}
                 onChange={(e) => handleChange("country", e.target.value)}
                 placeholder="Select Country"
@@ -97,7 +93,7 @@ const FilterCard = ({ onFilter }) => {
             <Dropdown
                 id="city"
                 label="City"
-                options={cities.map(c => ({ value: c.id, label: c.name }))}
+                options={options.cities}
                 value={filters.city}
                 onChange={(e) => handleChange("city", e.target.value)}
                 disabled={!filters.country}
@@ -107,7 +103,7 @@ const FilterCard = ({ onFilter }) => {
             <Dropdown
                 id="make"
                 label="Make"
-                options={makes.map(m => ({ value: m.id, label: m.name }))}
+                options={options.makes}
                 value={filters.make}
                 onChange={(e) => handleChange("make", e.target.value)}
                 placeholder="Select Make"
@@ -116,7 +112,7 @@ const FilterCard = ({ onFilter }) => {
             <Dropdown
                 id="model"
                 label="Model"
-                options={models.map(m => ({ value: m.id, label: m.name }))}
+                options={options.models}
                 value={filters.model}
                 onChange={(e) => handleChange("model", e.target.value)}
                 disabled={!filters.make}
@@ -126,10 +122,7 @@ const FilterCard = ({ onFilter }) => {
             <Dropdown
                 id="listingType"
                 label="Listing Type"
-                options={[
-                    { value: "SALE", label: "Sale" },
-                    { value: "RENT", label: "Rent" },
-                ]}
+                options={options.listingType}
                 value={filters.listingType}
                 onChange={(e) => handleChange("listingType", e.target.value)}
                 placeholder="Select Listing Type"

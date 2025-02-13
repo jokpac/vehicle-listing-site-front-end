@@ -11,42 +11,48 @@ import Swal from "sweetalert2";
 import "../styles/ListingForm.css";
 
 function ListingForm() {
-  const { listingId } = useParams();
+  const { listingId } = useParams(); // Get listing ID from URL if editing an existing listing
   const navigate = useNavigate();
-  const imageURL = `http://localhost:8080/images`;
+  const imageURL = `http://localhost:8080/images`; // Base URL for uploaded images
 
+  // Use custom hook to manage form state and logic
   const {
-    formData,
-    options,
-    handleChange,
-    handleSubmit,
-    handleBlur,
-    uploadedImages,
-    uploadImage,
-    errors,
-    isSubmitting
+    formData, // Object containing form data
+    options, // Available dropdown options (e.g., makes, models, fuel types, etc.)
+    handleChange, // Function to handle input field changes
+    handleSubmit, // Function to submit form data
+    handleBlur, // Function to handle input blur events for validation
+    uploadedImages, // Array of uploaded images
+    uploadImage, // Function to handle image uploads
+    errors, // Object containing validation errors
+    isSubmitting // Boolean to track form submission status
   } = useListingForm(listingId, async (payload) => {
     try {
       if (listingId) {
+        // If editing, update the listing
         await ListingService.updateListing(listingId, payload);
       } else {
+        // Otherwise, create a new listing
         await ListingService.submitListing(payload);
       }
-      navigate("/dashboard");
+      navigate("/dashboard"); // Redirect to dashboard after successful submission
     } catch (error) {
       console.error("Error submitting form:", error);
     }
   });
 
+  // Handles form submission
   const handleFormSubmit = async (e) => {
-    e.preventDefault();
+    e.preventDefault(); // Prevent default form submission behavior
 
+    // Validate form data
     const validationErrors = validateListing(formData);
     if (Object.keys(validationErrors).length > 0) {
-      handleSubmit(e);
+      handleSubmit(e); // If validation fails, update state and exit function
       return;
     }
 
+    // Prepare payload for submission
     const payload = {
       title: formData.title,
       price: Number(formData.price),
@@ -64,10 +70,11 @@ function ListingForm() {
       makeId: Number(formData.make),
       modelId: Number(formData.model),
       listingType: formData.listingType,
-      imageURLs: uploadedImages.map(image => `images/${image.id}`),
+      imageURLs: uploadedImages.map(image => `images/${image.id}`), // Convert uploaded images to URL paths
       listingStatus: "ACTIVE"
     };
 
+    // Confirmation dialog before submission
     const result = await Swal.fire({
       title: 'Submit Listing?',
       text: 'Are you sure you want to submit this listing?',
@@ -80,14 +87,16 @@ function ListingForm() {
     });
 
     if (result.isConfirmed) {
-      handleSubmit(e, payload);
+      handleSubmit(e, payload); // If confirmed, submit the form.
     }
   };
 
+  // Filter available cities based on selected country
   const filteredCities = formData.country
     ? options.cities.filter(city => city.countryId === formData.country.id)
     : [];
 
+  // Filter available models based on selected make
   const filteredModels = formData.make
     ? options.models.filter(model => model.makeId === formData.make.id)
     : [];
@@ -281,10 +290,7 @@ function ListingForm() {
       <Dropdown
         id="listingType"
         label="Listing Type"
-        options={[
-          { value: "SALE", label: "Sale" },
-          { value: "RENT", label: "Rent" },
-        ]}
+        options={options.listingType}
         value={formData.listingType}
         onChange={(e) => handleChange("listingType", e.target.value)}
         onBlur={() => handleBlur("listingType")}

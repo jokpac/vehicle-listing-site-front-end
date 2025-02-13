@@ -1,7 +1,9 @@
-import { useState, useEffect } from "react";
-import { fetchCountries, fetchCities, fetchMakes, fetchModels } from "../data/ListingFormOptions";
+import { useState } from "react";
+import { useDropdownData } from "./dataLoader";
 
+// Custom hook to manage filter state and dropdown data
 export const useFilterState = () => {
+    // Initial filter values
     const initialFilters = {
         priceMin: "",
         priceMax: "",
@@ -23,79 +25,39 @@ export const useFilterState = () => {
         listingType: "",
     };
 
+    // State to store current filter selections
     const [filters, setFilters] = useState(initialFilters);
-    const [countries, setCountries] = useState([]);
-    const [cities, setCities] = useState([]);
-    const [makes, setMakes] = useState([]);
-    const [models, setModels] = useState([]);
 
+    // Fetch dropdown data for dependent fields based on selected country and make
+    const { countries, cities, makes, models } = useDropdownData(filters.country, filters.make);
+
+    // Function to reset all filters to their initial state
     const resetFilters = () => {
         setFilters({ ...initialFilters });
     };
 
-    useEffect(() => {
-        const loadInitialData = async () => {
-            try {
-                const [countryData, makeData] = await Promise.all([fetchCountries(), fetchMakes()]);
-                setCountries(countryData || []);
-                setMakes(makeData || []);
-            } catch (error) {
-                console.error("Error loading initial data:", error);
-            }
-        };
-        loadInitialData();
-    }, []);
-
-    useEffect(() => {
-        const loadCities = async () => {
-            if (!filters.country) {
-                setCities([]);
-                return;
-            }
-            try {
-                const cityData = await fetchCities(filters.country);
-                setCities(cityData || []);
-            } catch (error) {
-                console.error("Error loading cities:", error);
-            }
-        };
-        loadCities();
-    }, [filters.country]);
-
-    useEffect(() => {
-        const loadModels = async () => {
-            if (!filters.make) {
-                setModels([]);
-                return;
-            }
-            try {
-                const modelData = await fetchModels(filters.make);
-                setModels(modelData || []);
-            } catch (error) {
-                console.error("Error fetching models:", error);
-            }
-        };
-        loadModels();
-    }, [filters.make]);
-
+    // Function to handle changes in filter fields
     const handleChange = (key, value) => {
-        const stringFields = ['fuelType', 'transmission', 'drivenWheels', 'listingType'];
-        const decimalFields = ['engineSizeMin', 'engineSizeMax'];
-        
+        const stringFields = ['fuelType', 'transmission', 'drivenWheels', 'listingType']; // Fields that store strings
+        const decimalFields = ['engineSizeMin', 'engineSizeMax']; // Fields that may contain decimal values
+
         let newValue;
+
+        // Determine the correct format for the new value based on the field type
         if (stringFields.includes(key)) {
-            newValue = value || "";
+            newValue = value || ""; // Ensure string fields default to empty string
         } else if (decimalFields.includes(key)) {
-            newValue = value === '' ? '' : value;
+            newValue = value === '' ? '' : value;  // Maintain empty string for decimals when no value is provided
         } else {
-            newValue = value ? Number(value) : "";
+            newValue = value ? Number(value) : "";  // Convert numeric fields to numbers, default to empty string
         }
 
+        // Update filters state and reset dependent fields when necessary
         setFilters((prev) => ({
             ...prev,
             [key]: newValue,
-            ...(key === "country" ? { city: "" } : {}),
-            ...(key === "make" ? { model: "" } : {}),
+            ...(key === "country" ? { city: "" } : {}), // Reset city if country changes
+            ...(key === "make" ? { model: "" } : {}), // Reset model if make changes
         }));
     };
 

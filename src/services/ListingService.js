@@ -1,5 +1,17 @@
 import axiosInstance from "../data/AxiosInstance";
 
+const getListings = async (filters) => {
+    try {
+        const response = await axiosInstance.get("/api/listings/filter", {
+            params: filters,
+        });
+        return response.data;
+    } catch (error) {
+        console.error("Error fetching listings:", error.response?.data || error.message);
+        throw error;
+    }
+};
+
 const getUserListings = async (userId) => {
     try {
         const response = await axiosInstance.get(`api/listings/user/${userId}`);
@@ -69,6 +81,7 @@ const ListingService = {
     updateListingStatus,
     updateListing,
     submitListing,
+    getListings
 };
 
 export default ListingService;

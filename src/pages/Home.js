@@ -1,34 +1,33 @@
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState } from 'react';
 import '../styles/Home.css';
-import axiosInstance from '../data/AxiosInstance';
 import AuthService from '../services/AuthService';
+import ListingService from '../services/ListingService';
 import ListingCard from '../components/ListingCard';
 import FilterCard from '../components/FilterCard';
-import { filterListings } from '../utils/filterUtils';
 import Swal from "sweetalert2";
 
 function Home() {
-  const [listings, setListings] = useState([]);
   const [filteredListings, setFilteredListings] = useState([]);
   const [user, setUser] = useState(null);
 
-  const fetchListings = useCallback(async () => {
+  // Fetch listings with or without filters
+  const fetchListings = async (filters = {}) => {
+    // Only active listings will be displayed
+    const finalFilters = { ...filters, listingStatus: 'ACTIVE' };
+  
     try {
-      const response = await axiosInstance.get('/api/listings');
-      const activeListings = response.data.filter(listing => listing.listingStatus === 'ACTIVE');
-      setListings(activeListings);
-      setFilteredListings(activeListings);
+      const filteredData = await ListingService.getListings(finalFilters);
+      setFilteredListings(filteredData);
     } catch (error) {
-      console.error('Error fetching listings:', error);
-      setListings([]);
+      console.error("Error fetching listings:", error);
       setFilteredListings([]);
     }
-  }, []);
+  };
 
   useEffect(() => {
-    fetchListings();
+    fetchListings(); // Fetch all listings when page loads
     setUser(AuthService.getCurrentUser());
-  }, [fetchListings]);
+  }, []);
 
   const handleDeleteListing = async (listingId) => {
     const result = await Swal.fire({
@@ -44,28 +43,20 @@ function Home() {
     if (!result.isConfirmed) return;
 
     try {
-      await axiosInstance.delete(`/api/listings/${listingId}`);
-      setListings((prevListings) =>
-        prevListings.filter((listing) => listing.id !== listingId)
-      );
+      await ListingService.deleteListing(listingId);
       setFilteredListings((prevListings) =>
         prevListings.filter((listing) => listing.id !== listingId)
       );
-
-      await Swal.fire("Deleted!", "The listing has been removed.", "success"); // ✅ Ensures correct flow
+      await Swal.fire("Deleted!", "The listing has been removed.", "success");
     } catch (error) {
       console.error("Error deleting listing:", error);
       Swal.fire("Error!", "Failed to delete the listing.", "error");
     }
   };
 
-  const handleFilter = (filters) => {
-    setFilteredListings(filterListings(listings, filters));
-  };
-
   return (
     <div className="home-container">
-      <FilterCard className="filter-card" onFilter={handleFilter} />
+      <FilterCard className="filter-card" onFilter={(filters) => fetchListings(filters)} />
       <div className="vehicle-listings">
         {filteredListings.length ? filteredListings.map(listing => (
           <ListingCard

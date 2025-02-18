@@ -12,17 +12,26 @@ const FilterCard = ({ onFilter }) => {
     const options = getDropdownOptions({ countries, cities, makes, models });
 
     // Handles form submission by filtering out empty values and calling the provided onFilter function
-    const handleSubmit = (e) => {
-        e.preventDefault();
+const handleSubmit = (e) => {
+    e.preventDefault();
 
-        // Removes empty or null fields from the filter object before passing it to the onFilter callback
-        const filteredData = Object.fromEntries(
-            Object.entries(filters).filter(([_, value]) => value !== "" && value !== null)
-        );
-        console.log("Applied filters:", filteredData);
+    const filteredData = Object.fromEntries(
+        Object.entries(filters)
+            .filter(([key, value]) => value !== "" && value !== null)
+            .map(([key, value]) => {
+                // Rename keys to match backend expectations
+                const keyMapping = {
+                    make: "makeId",
+                    model: "modelId",
+                    country: "countryId",
+                    city: "cityId",
+                };
+                return [keyMapping[key] || key, value]; // Use mapped key if it exists, otherwise use original key
+            })
+    );
 
-        onFilter(filteredData);
-    };
+    onFilter(filteredData);
+};
 
     // Resets all filters to their initial state and clears applied filters
     const handleReset = () => {

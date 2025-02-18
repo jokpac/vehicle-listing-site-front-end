@@ -94,7 +94,7 @@ function ListingDetails() {
         </div>
         <div className="parameter-item">
           <div className="parameter-label">Make & Model</div>
-          <div className="parameter-value">{`${listing.make.name} ${listing.model.name}`}</div>
+          <div className="parameter-value">{`${listing.makeName} ${listing.modelName}`}</div>
         </div>
         <div className="parameter-item">
           <div className="parameter-label">Mileage</div>
@@ -118,7 +118,7 @@ function ListingDetails() {
         </div>
         <div className="parameter-item">
           <div className="parameter-label">Location</div>
-          <div className="parameter-value">{`${listing.city.name}, ${listing.country.name}`}</div>
+          <div className="parameter-value">{`${listing.cityName}, ${listing.countryName}`}</div>
         </div>
       </div>
       <p className="dsc">Description</p>

@@ -1,4 +1,5 @@
 import React from 'react';
+import axiosInstance from '../data/AxiosInstance';
 
 // Image logic for ListingForm.js
 const ImageUpload = ({ uploadedImages, uploadImage, imageURL }) => (
@@ -37,21 +38,22 @@ export const uploadImage = async (file, setUploadedImages) => {
     formData.append("file", file);
 
     try {
-        const response = await fetch(imageUploadURL, {
-            method: "POST",
-            body: formData,
+        const response = await axiosInstance.post(imageUploadURL, formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            }
         });
 
-        if (!response.ok) {
-            throw new Error(await response.text());
+        if (response.status !== 200) {
+            throw new Error(response.data);
         }
 
-        const result = await response.text();
+        const result = response.data;
         const imageId = result.split(": ")[1];
 
         setUploadedImages((prev) => [...prev, { id: imageId, fileName: file.name, file }]);
     } catch (error) {
-        console.error("Image upload failed:", error.message);
+        console.error("Image upload failed:", error.response?.data || error.message);
     }
 };
 
